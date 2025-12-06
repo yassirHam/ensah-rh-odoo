@@ -1,0 +1,412 @@
+<odoo>
+    <!-- Employee Report Template -->
+    <template id="report_employee_document">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div class="header mb32">
+                        <div class="row">
+                            <div class="col-6">
+                                <h2 class="text-primary">
+                                    <span>Ensa Hoceima</span>
+                                    <br/>
+                                    <small class="text-muted">HR Department</small>
+                                </h2>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h3>Employee Profile</h3>
+                                <p class="text-muted mt4">
+                                    Generated: <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="employee-banner mt16">
+                            <div class="employee-avatar">
+                                <img t-att-src="image_data_uri(employee.image_1920)" alt="Employee Photo" class="img-fluid rounded-circle border"/>
+                            </div>
+                            <div class="employee-details">
+                                <h1 class="employee-name" t-field="employee.name"/>
+                                <h3 class="employee-job" t-field="employee.job_title"/>
+                                <p class="employee-department" t-field="employee.department_id.name"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="section mb16">
+                                    <h4 class="section-title">Personal Information</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label">National ID:</span>
+                                            <span class="info-value" t-field="employee.identification_number"/>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Contact:</span>
+                                            <span class="info-value">
+                                                <t t-field="employee.work_phone"/><br/>
+                                                <t t-field="employee.work_email"/>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Emergency Contact:</span>
+                                            <span class="info-value" t-field="employee.emergency_contact"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section mb16">
+                                    <h4 class="section-title">Contract Details</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label">Start Date:</span>
+                                            <span class="info-value" t-field="employee.first_contract_date"/>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Contract Type:</span>
+                                            <span class="info-value" t-field="employee.contract_id.contract_type"/>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Working Hours:</span>
+                                            <span class="info-value" t-field="employee.resource_calendar_id.name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-6">
+                                <div class="section mb16">
+                                    <h4 class="section-title">Performance Overview</h4>
+                                    <div class="performance-chart">
+                                        <canvas id="performanceChart" height="200"></canvas>
+                                    </div>
+                                    <div class="performance-summary mt16">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="card border-left-primary shadow py-2">
+                                                    <div class="card-body">
+                                                        <div class="row no-gutters align-items-center">
+                                                            <div class="col mr-2">
+                                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Avg. Score</div>
+                                                                <div class="h5 mb-0 font-weight-bold text-gray-800" t-esc="'%.1f' % employee.avg_evaluation_score"/>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <i class="fas fa-star fa-2x text-gray-300"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="card border-left-success shadow py-2">
+                                                    <div class="card-body">
+                                                        <div class="row no-gutters align-items-center">
+                                                            <div class="col mr-2">
+                                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Last Eval</div>
+                                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                                    <span t-field="employee.last_evaluation_date"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <div class="section">
+                                    <h4 class="section-title">Skill Matrix</h4>
+                                    <div class="skill-matrix">
+                                        <div class="skill-category">
+                                            <h5>Technical Skills</h5>
+                                            <div class="skill-list">
+                                                <t t-foreach="employee.technical_skills.splitlines()" t-as="skill">
+                                                    <div class="skill-item">
+                                                        <div class="skill-name" t-esc="skill"/>
+                                                        <div class="skill-level">
+                                                            <span t-esc="get_skill_level(skill)"/>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="skill-category">
+                                            <h5>Soft Skills</h5>
+                                            <div class="skill-list">
+                                                <t t-foreach="employee.soft_skills.splitlines()" t-as="skill">
+                                                    <div class="skill-item">
+                                                        <div class="skill-name" t-esc="skill"/>
+                                                        <div class="skill-level">
+                                                            <span t-esc="get_skill_level(skill)"/>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="skill-category">
+                                            <h5>Languages</h5>
+                                            <div class="skill-list">
+                                                <t t-foreach="employee.language_skills.splitlines()" t-as="skill">
+                                                    <div class="skill-item">
+                                                        <div class="skill-name" t-esc="skill"/>
+                                                        <div class="skill-level">
+                                                            <span t-esc="get_skill_level(skill)"/>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer mt32 pt16 border-top">
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="text-muted">
+                                    This is an official document from Ensa Hoceima HR Department.
+                                </p>
+                            </div>
+                            <div class="col-6 text-right">
+                                <img t-att-src="'/ensa_hoceima_hr/static/description/icon.svg'" 
+                                     alt="Company Logo" style="height: 40px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <template id="report_employee">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="employee">
+                <t t-call="ensa_hoceima_hr.report_employee_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Evaluation Report Template -->
+    <template id="report_evaluation_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="evaluation">
+                <t t-call="ensa_hoceima_hr.report_evaluation_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_evaluation_document">
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <h2 class="text-primary mb32">Performance Evaluation Report</h2>
+                
+                <div class="row mb16">
+                    <div class="col-6">
+                        <strong>Employee:</strong> <span t-field="evaluation.employee_id.name"/><br/>
+                        <strong>Evaluation Date:</strong> <span t-field="evaluation.date"/><br/>
+                        <strong>Evaluator:</strong> <span t-field="evaluation.evaluator_id.name"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Status:</strong> <span t-field="evaluation.state"/><br/>
+                        <strong>Overall Score:</strong> <span t-field="evaluation.overall_score" t-options="{'widget': 'float', 'precision': 1}"/>/10<br/>
+                        <strong>Recommendation:</strong> <span t-field="evaluation.recommendation"/>
+                    </div>
+                </div>
+
+                <h3 class="mt32 mb16">Performance Scores</h3>
+                <table class="table table-sm">
+                    <thead>
+                        <tr><th>Criteria</th><th>Score</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Technical Skills</td><td><span t-field="evaluation.technical_score"/>/10</td></tr>
+                        <tr><td>Productivity</td><td><span t-field="evaluation.productivity_score"/>/10</td></tr>
+                        <tr><td>Teamwork</td><td><span t-field="evaluation.teamwork_score"/>/10</td></tr>
+                        <tr><td>Innovation</td><td><span t-field="evaluation.innovation_score"/>/10</td></tr>
+                        <tr><td>Attendance</td><td><span t-field="evaluation.attendance_score"/>/10</td></tr>
+                    </tbody>
+                </table>
+
+                <t t-if="evaluation.comments">
+                    <h3 class="mt32 mb16">Evaluator Comments</h3>
+                    <p t-field="evaluation.comments"/>
+                </t>
+
+                <t t-if="evaluation.improvement_plan">
+                    <h3 class="mt32 mb16">Improvement Plan</h3>
+                    <p t-field="evaluation.improvement_plan"/>
+                </t>
+
+                <t t-if="evaluation.approval_manager_id">
+                    <div class="mt32">
+                        <strong>Approving Manager:</strong> <span t-field="evaluation.approval_manager_id.name"/><br/>
+                        <strong>Approval Date:</strong> <span t-field="evaluation.approval_date"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Training Report Template -->
+    <template id="report_training_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="training">
+                <t t-call="ensa_hoceima_hr.report_training_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_training_document">
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <h2 class="text-primary mb32">Training Program Report</h2>
+                
+                <div class="row mb16">
+                    <div class="col-6">
+                        <strong>Program:</strong> <span t-field="training.name"/><br/>
+                        <strong>Employee:</strong> <span t-field="training.employee_id.name"/><br/>
+                        <strong>Category:</strong> <span t-field="training.category"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Start Date:</strong> <span t-field="training.start_date"/><br/>
+                        <strong>End Date:</strong> <span t-field="training.end_date"/><br/>
+                        <strong>Duration:</strong> <span t-field="training.duration"/> hours
+                    </div>
+                </div>
+
+                <strong>Status:</strong> <span t-field="training.status"/><br/>
+                <t t-if="training.certification">
+                    <p><strong>Certification:</strong> Yes - Certificate Provided</p>
+                </t>
+                <t t-if="training.post_training_score">
+                    <p><strong>Assessment Score:</strong> <span t-field="training.post_training_score" t-options="{'widget': 'float', 'precision': 1}"/>/10</p>
+                </t>
+
+                <t t-if="training.description">
+                    <h3 class="mt32 mb16">Program Description</h3>
+                    <p t-field="training.description"/>
+                </t>
+
+                <t t-if="training.competency_improvement">
+                    <h3 class="mt32 mb16">Competencies Improved</h3>
+                    <p t-field="training.competency_improvement"/>
+                </t>
+
+                <t t-if="training.feedback">
+                    <h3 class="mt32 mb16">Participant Feedback</h3>
+                    <p t-field="training.feedback"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Student Project Report Template -->
+    <template id="report_student_project_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="project">
+                <t t-call="ensa_hoceima_hr.report_student_project_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_student_project_document">
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <h2 class="text-primary mb32">Student Project Report</h2>
+                
+                <div class="row mb16">
+                    <div class="col-8">
+                        <strong>Project Title:</strong> <span t-field="project.title"/><br/>
+                        <strong>Project Name:</strong> <span t-field="project.name"/><br/>
+                        <strong>Domain:</strong> <span t-field="project.domain"/>
+                    </div>
+                    <div class="col-4">
+                        <strong>Status:</strong> <span t-field="project.status"/><br/>
+                        <strong>Grade:</strong> <span t-field="project.final_grade"/>/20
+                    </div>
+                </div>
+
+                <strong>Supervisor:</strong> <span t-field="project.supervisor_id.name"/><br/>
+                <strong>Start Date:</strong> <span t-field="project.start_date"/><br/>
+                <strong>End Date:</strong> <span t-field="project.end_date"/><br/>
+                <strong>Budget:</strong> <span t-field="project.budget"/>
+
+                <t t-if="project.description">
+                    <h3 class="mt32 mb16">Description</h3>
+                    <p t-field="project.description"/>
+                </t>
+
+                <t t-if="project.technology_stack">
+                    <h3 class="mt16 mb8">Technology Stack</h3>
+                    <p t-field="project.technology_stack"/>
+                </t>
+
+                <t t-if="project.deliverables">
+                    <h3 class="mt16 mb8">Deliverables</h3>
+                    <p t-field="project.deliverables"/>
+                </t>
+
+                <t t-if="project.outcomes">
+                    <h3 class="mt16 mb8">Outcomes &amp; Results</h3>
+                    <p t-field="project.outcomes"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Internship Report Template -->
+    <template id="report_internship_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="internship">
+                <t t-call="ensa_hoceima_hr.report_internship_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_internship_document">
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <h2 class="text-primary mb32">Internship Report</h2>
+                
+                <div class="row mb16">
+                    <div class="col-6">
+                        <strong>Student Name:</strong> <span t-field="internship.student_name"/><br/>
+                        <strong>Student Email:</strong> <span t-field="internship.student_email"/><br/>
+                        <strong>Host Company:</strong> <span t-field="internship.host_company"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Type:</strong> <span t-field="internship.internship_type"/><br/>
+                        <strong>Status:</strong> <span t-field="internship.status"/><br/>
+                        <strong>Report Score:</strong> <span t-field="internship.report_score"/>/20
+                    </div>
+                </div>
+
+                <strong>Supervisor:</strong> <span t-field="internship.supervisor_id.name"/><br/>
+                <strong>Start Date:</strong> <span t-field="internship.start_date"/><br/>
+                <strong>End Date:</strong> <span t-field="internship.end_date"/>
+
+                <t t-if="internship.learning_outcomes">
+                    <h3 class="mt32 mb16">Learning Outcomes</h3>
+                    <p t-field="internship.learning_outcomes"/>
+                </t>
+
+                <t t-if="internship.specialization">
+                    <p><strong>Specialization:</strong> <span t-field="internship.specialization"/></p>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

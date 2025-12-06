@@ -1,0 +1,73 @@
+<odoo>
+    <!-- Root Menu for Ensa Hoceima HR Module -->
+    <menuitem id="menu_ensa_hr_root"
+              name="Ensa Hoceima HR"
+              sequence="100"
+              web_icon="ensa_hoceima_hr,static/description/icon.png"/>
+    
+    <!-- Performance Management Section -->
+    <menuitem id="menu_ensa_performance"
+              name="Performance"
+              parent="menu_ensa_hr_root"
+              sequence="10"/>
+    
+    <menuitem id="menu_ensa_evaluation"
+              name="Evaluations"
+              parent="menu_ensa_performance"
+              action="ensa_hoceima_hr.action_ensa_evaluation"
+              sequence="1"/>
+    
+    <menuitem id="menu_ensa_training"
+              name="Training Programs"
+              parent="menu_ensa_performance"
+              action="ensa_hoceima_hr.action_ensa_training"
+              sequence="2"/>
+    
+    <!-- Assets Management Section -->
+    <menuitem id="menu_ensa_assets"
+              name="Assets"
+              parent="menu_ensa_hr_root"
+              sequence="20"/>
+    
+    <menuitem id="menu_ensa_equipment"
+              name="Equipment"
+              parent="menu_ensa_assets"
+              action="ensa_hoceima_hr.action_ensa_equipment"
+              sequence="1"/>
+    
+    <!-- Academic Management Section -->
+    <menuitem id="menu_ensa_academic"
+              name="Academic"
+              parent="menu_ensa_hr_root"
+              sequence="15"/>
+    
+    <menuitem id="menu_ensa_student_projects"
+              name="Student Projects"
+              parent="menu_ensa_academic"
+              action="ensa_hoceima_hr.action_ensa_student_project"
+              sequence="1"/>
+    
+    <menuitem id="menu_ensa_internships"
+              name="Internships"
+              parent="menu_ensa_academic"
+              action="ensa_hoceima_hr.action_ensa_internship"
+              sequence="2"/>
+    
+    <!-- Employee Management Section -->
+    <menuitem id="menu_ensa_employees"
+              name="Employees"
+              parent="menu_ensa_hr_root"
+              sequence="5"/>
+    
+    <menuitem id="menu_ensa_employee_analysis"
+              name="Employee Analysis"
+              parent="menu_ensa_employees"
+              action="ensa_hoceima_hr.action_ensa_employee_analysis"
+              sequence="1"/>
+
+    <!-- Departments Section (ENSA Specialties) -->
+    <menuitem id="menu_ensa_departments"
+              name="Departments"
+              parent="menu_ensa_hr_root"
+              sequence="8"/>
+</odoo>

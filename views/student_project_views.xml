@@ -1,0 +1,125 @@
+<odoo>
+    <!-- Student Project Tree View -->
+    <record id="view_ensa_student_project_tree" model="ir.ui.view">
+        <field name="name">Student Project List</field>
+        <field name="model">ensa.student.project</field>
+        <field name="arch" type="xml">
+            <tree string="Student Projects" decoration-info="status == 'planning'" decoration-success="status == 'completed'" decoration-warning="status == 'on_hold'" decoration-danger="status == 'cancelled'">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="supervisor_id"/>
+                <field name="domain"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="status"/>
+                <field name="budget"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Student Project Form View -->
+    <record id="view_ensa_student_project_form" model="ir.ui.view">
+        <field name="name">Student Project Form</field>
+        <field name="model">ensa.student.project</field>
+        <field name="arch" type="xml">
+            <form string="Student Project">
+                <header>
+                    <button name="action_start" type="object" string="Start Project" class="btn-primary" invisible="status != 'planning'"/>
+                    <button name="action_complete" type="object" string="Complete Project" class="btn-success" invisible="status != 'in_progress'"/>
+                    <button name="action_hold" type="object" string="Put On Hold" invisible="status != 'in_progress'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="status in ('completed', 'cancelled')"/>
+                    <field name="status" widget="statusbar" options="{'clickable': False}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title" placeholder="Project Title"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="supervisor_id" required="1"/>
+                            <field name="domain"/>
+                        </group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                            <field name="budget"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" nolabel="1" placeholder="Project Description and Overview"/>
+                    </group>
+                    <notebook>
+                        <page string="Deliverables &amp; Outcomes">
+                            <group>
+                                <field name="technology_stack" nolabel="1" placeholder="Technologies used (Python, Arduino, MQTT, etc.)"/>
+                            </group>
+                            <group>
+                                <field name="deliverables" nolabel="1" placeholder="Expected deliverables and outputs"/>
+                            </group>
+                            <group>
+                                <field name="outcomes" nolabel="1" placeholder="Learning outcomes and expected skills"/>
+                            </group>
+                        </page>
+                        <page string="Grading">
+                            <group>
+                                <field name="final_grade" placeholder="Final grade (0-20)"/>
+                            </group>
+                        </page>
+                        <page string="Tracking">
+                            <group>
+                                <field name="created_date" readonly="1"/>
+                                <field name="modified_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Student Project Search Filter -->
+    <record id="view_ensa_student_project_search" model="ir.ui.view">
+        <field name="name">Student Project Search</field>
+        <field name="model">ensa.student.project</field>
+        <field name="arch" type="xml">
+            <search string="Search Student Projects">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="supervisor_id"/>
+                <field name="domain"/>
+                <filter name="status_planning" string="Planning" domain="[('status', '=', 'planning')]"/>
+                <filter name="status_in_progress" string="In Progress" domain="[('status', '=', 'in_progress')]"/>
+                <filter name="status_completed" string="Completed" domain="[('status', '=', 'completed')]"/>
+                <filter name="status_on_hold" string="On Hold" domain="[('status', '=', 'on_hold')]"/>
+                <filter name="status_cancelled" string="Cancelled" domain="[('status', '=', 'cancelled')]"/>
+                <separator/>
+                <filter name="upcoming_projects" string="Upcoming" domain="[('start_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="my_supervised_projects" string="My Supervised Projects" domain="[('supervisor_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_by_supervisor" string="Supervisor" context="{'group_by': 'supervisor_id'}"/>
+                    <filter name="group_by_domain" string="Domain" context="{'group_by': 'domain'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Student Project List Action -->
+    <record id="action_ensa_student_project" model="ir.actions.act_window">
+        <field name="name">Student Projects</field>
+        <field name="res_model">ensa.student.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_ensa_student_project_tree"/>
+        <field name="search_view_id" ref="view_ensa_student_project_search"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Create a new student project to track academic capstone projects and thesis work.
+            </p>
+        </field>
+    </record>
+
+</odoo>

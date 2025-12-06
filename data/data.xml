@@ -1,0 +1,355 @@
+<odoo noupdate="1">
+    <!-- Sequences -->
+    <record id="seq_ensa_evaluation" model="ir.sequence">
+        <field name="name">Evaluation</field>
+        <field name="code">ensa.evaluation</field>
+        <field name="prefix">EVAL/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    
+    <record id="seq_ensa_project" model="ir.sequence">
+        <field name="name">Student Project</field>
+        <field name="code">ensa.student.project</field>
+        <field name="prefix">PROJ/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_ensa_internship" model="ir.sequence">
+        <field name="name">Internship</field>
+        <field name="code">ensa.internship</field>
+        <field name="prefix">INT/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- ENSA Al-Hoceima Engineering Specialties (Departments) -->
+    <record id="dept_geenie_informatique" model="hr.department">
+        <field name="name">Génie Informatique</field>
+    </record>
+
+    <record id="dept_geenie_civil" model="hr.department">
+        <field name="name">Génie Civil</field>
+    </record>
+
+    <record id="dept_geenie_eau_environnement" model="hr.department">
+        <field name="name">Génie de l'eau et de l'Environnement</field>
+    </record>
+
+    <record id="dept_geenie_energetique" model="hr.department">
+        <field name="name">Génie énergétique et énergies renouvelables</field>
+    </record>
+
+    <record id="dept_geenie_mecanique" model="hr.department">
+        <field name="name">Génie Mécanique</field>
+    </record>
+
+    <record id="dept_ingenierie_donnees" model="hr.department">
+        <field name="name">Ingénierie des données</field>
+    </record>
+
+    <record id="dept_transformation_digitale_ai" model="hr.department">
+        <field name="name">Transformation Digitale et Intelligence Artificielle</field>
+    </record>
+
+    <!-- DEMO DATA: Employees (Staff &amp; Instructors) -->
+    <record id="employee_director" model="hr.employee">
+        <field name="name">Dr. Ahmed Bennani</field>
+        <field name="identification_number">AB123456</field>
+        <field name="job_title">Director</field>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Engineering Management, Strategic Planning, Academic Leadership</field>
+        <field name="soft_skills">Leadership, Decision Making, Communication, Stakeholder Management</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Fluent)</field>
+    </record>
+
+    <record id="employee_prof_Ahmed" model="hr.employee">
+        <field name="name">Prof. Mohammed Aziz</field>
+        <field name="identification_number">MA234567</field>
+        <field name="job_title">Professor - Civil Engineering</field>
+        <field name="department_id" ref="dept_geenie_civil"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Civil Engineering, Structural Analysis, CAD Design, Project Management</field>
+        <field name="soft_skills">Mentoring, Teaching, Problem-solving</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Advanced)</field>
+    </record>
+
+    <record id="employee_prof_Fatima" model="hr.employee">
+        <field name="name">Prof. Fatima Kabbaj</field>
+        <field name="identification_number">FK345678</field>
+        <field name="job_title">Professor - Computer Engineering</field>
+        <field name="department_id" ref="dept_geenie_informatique"/>
+        <field name="skill_level">advanced</field>
+        <field name="technical_skills">Software Engineering, Database Design, Web Development, AI/ML</field>
+        <field name="soft_skills">Innovation, Collaboration, Mentoring</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Fluent)</field>
+    </record>
+
+    <record id="employee_lab_tech" model="hr.employee">
+        <field name="name">Karim Benali</field>
+        <field name="identification_number">KB456789</field>
+        <field name="job_title">Laboratory Technician</field>
+        <field name="department_id" ref="dept_geenie_eau_environnement"/>
+        <field name="skill_level">advanced</field>
+        <field name="technical_skills">Laboratory Equipment Maintenance, Material Testing, Quality Control</field>
+        <field name="soft_skills">Attention to Detail, Safety Awareness</field>
+        <field name="language_skills">Arabic (Native), French (Advanced)</field>
+    </record>
+
+    <record id="employee_prof_mechanical" model="hr.employee">
+        <field name="name">Dr. Hassan Rami</field>
+        <field name="identification_number">HR567890</field>
+        <field name="job_title">Professor - Mechanical Engineering</field>
+        <field name="department_id" ref="dept_geenie_mecanique"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Mechanical Engineering, CAD/CAM, Manufacturing Processes, Finite Element Analysis</field>
+        <field name="soft_skills">Leadership, Problem-solving, Mentoring</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Fluent)</field>
+    </record>
+
+    <record id="employee_prof_energy" model="hr.employee">
+        <field name="name">Dr. Youssef Bennani</field>
+        <field name="identification_number">YB678901</field>
+        <field name="job_title">Professor - Energy Engineering</field>
+        <field name="department_id" ref="dept_geenie_energetique"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Renewable Energy Systems, Solar Technology, Energy Efficiency, Sustainability</field>
+        <field name="soft_skills">Innovation, Research, Collaboration</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Fluent)</field>
+    </record>
+
+    <record id="employee_prof_data" model="hr.employee">
+        <field name="name">Dr. Noor Al-Rasheed</field>
+        <field name="identification_number">NR789012</field>
+        <field name="job_title">Professor - Data Engineering</field>
+        <field name="department_id" ref="dept_ingenierie_donnees"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Big Data, Python, SQL, Data Architecture, ETL Systems</field>
+        <field name="soft_skills">Analysis, Communication, Teaching</field>
+        <field name="language_skills">Arabic (Native), French (Advanced), English (Fluent)</field>
+    </record>
+
+    <record id="employee_prof_ai" model="hr.employee">
+        <field name="name">Dr. Rachid Karim</field>
+        <field name="identification_number">RK890123</field>
+        <field name="job_title">Professor - AI &amp; Digital Transformation</field>
+        <field name="department_id" ref="dept_transformation_digitale_ai"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Machine Learning, Deep Learning, AI Strategy, Digital Transformation, TensorFlow</field>
+        <field name="soft_skills">Innovation, Strategic Planning, Mentoring</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Fluent)</field>
+    </record>
+
+    <record id="employee_prof_water" model="hr.employee">
+        <field name="name">Dr. Amina Hassan</field>
+        <field name="identification_number">AH901234</field>
+        <field name="job_title">Professor - Water &amp; Environment</field>
+        <field name="department_id" ref="dept_geenie_eau_environnement"/>
+        <field name="skill_level">expert</field>
+        <field name="technical_skills">Water Treatment, Environmental Management, Hydraulics, Sustainability</field>
+        <field name="soft_skills">Research, Problem-solving, Collaboration</field>
+        <field name="language_skills">Arabic (Native), French (Fluent), English (Advanced)</field>
+    </record>
+
+    <!-- DEMO DATA: Evaluations -->
+    <record id="evaluation_prof_ahmed" model="ensa.evaluation">
+        <field name="name">EVAL/00001</field>
+        <field name="employee_id" ref="employee_prof_Ahmed"/>
+        <field name="evaluator_id" ref="employee_director"/>
+        <field name="date">2024-12-01</field>
+        <field name="technical_score">9.5</field>
+        <field name="productivity_score">9.0</field>
+        <field name="teamwork_score">8.5</field>
+        <field name="innovation_score">9.0</field>
+        <field name="attendance_score">9.5</field>
+        <field name="state">completed</field>
+        <field name="comments">Excellent performance in structural analysis courses. Students consistently praise his teaching methodology.</field>
+        <field name="improvement_plan">Continue mentoring junior faculty members and explore new research opportunities.</field>
+    </record>
+
+    <record id="evaluation_prof_fatima" model="ensa.evaluation">
+        <field name="name">EVAL/00002</field>
+        <field name="employee_id" ref="employee_prof_Fatima"/>
+        <field name="evaluator_id" ref="employee_director"/>
+        <field name="date">2024-11-28</field>
+        <field name="technical_score">9.0</field>
+        <field name="productivity_score">8.5</field>
+        <field name="teamwork_score">9.0</field>
+        <field name="innovation_score">9.5</field>
+        <field name="attendance_score">8.5</field>
+        <field name="state">completed</field>
+        <field name="comments">Leading edge approach to teaching AI/ML. Her integration of industry projects is exceptional.</field>
+        <field name="improvement_plan">Explore publishing research papers on innovative teaching methodologies.</field>
+    </record>
+
+    <!-- DEMO DATA: Training Programs -->
+    <record id="training_prof_ahmed" model="ensa.training">
+        <field name="name">Advanced BIM Technologies</field>
+        <field name="employee_id" ref="employee_prof_Ahmed"/>
+        <field name="trainer_id" ref="employee_prof_Ahmed"/>
+        <field name="start_date">2024-10-15</field>
+        <field name="end_date">2024-10-25</field>
+        <field name="category">technical</field>
+        <field name="status">completed</field>
+        <field name="description">Building Information Modeling advanced techniques for structural engineering</field>
+        <field name="certification">True</field>
+        <field name="cost">5000</field>
+        <field name="competency_improvement">BIM Software Mastery, 3D Modeling, Collaboration Tools</field>
+        <field name="post_training_score">9.2</field>
+    </record>
+
+    <record id="training_prof_fatima" model="ensa.training">
+        <field name="name">Industry 4.0 and IoT Integration</field>
+        <field name="employee_id" ref="employee_prof_Fatima"/>
+        <field name="trainer_id" ref="employee_prof_Fatima"/>
+        <field name="start_date">2024-09-01</field>
+        <field name="end_date">2024-09-15</field>
+        <field name="category">technical</field>
+        <field name="status">completed</field>
+        <field name="description">Latest trends in IoT and Industry 4.0 implementation in engineering</field>
+        <field name="certification">True</field>
+        <field name="cost">6000</field>
+        <field name="competency_improvement">IoT Architecture, Smart Systems, Edge Computing</field>
+        <field name="post_training_score">9.5</field>
+    </record>
+
+    <record id="training_lab_tech" model="ensa.training">
+        <field name="name">Laboratory Safety and Compliance 2024</field>
+        <field name="employee_id" ref="employee_lab_tech"/>
+        <field name="trainer_id" ref="employee_prof_Ahmed"/>
+        <field name="start_date">2024-11-10</field>
+        <field name="end_date">2024-11-12</field>
+        <field name="category">compliance</field>
+        <field name="status">completed</field>
+        <field name="description">Updated safety protocols and compliance standards for engineering laboratories</field>
+        <field name="certification">True</field>
+        <field name="cost">2000</field>
+        <field name="competency_improvement">Safety Protocols, ISO Standards, Emergency Response</field>
+        <field name="post_training_score">8.8</field>
+    </record>
+
+    <!-- DEMO DATA: Equipment -->
+    <record id="equipment_prof_ahmed_laptop" model="ensa.equipment">
+        <field name="name">Dell Precision 5680 Laptop</field>
+        <field name="employee_id" ref="employee_prof_Ahmed"/>
+        <field name="equipment_type">computer</field>
+        <field name="serial_number">DELL-5680-00145</field>
+        <field name="assignment_date">2023-08-15</field>
+        <field name="condition">excellent</field>
+        <field name="state">assigned</field>
+        <field name="value">8500</field>
+        <field name="warranty_expiry">2025-08-15</field>
+        <field name="notes">CAD workstation for structural design and BIM modeling</field>
+    </record>
+
+    <record id="equipment_prof_fatima_laptop" model="ensa.equipment">
+        <field name="name">MacBook Pro 16 inch</field>
+        <field name="employee_id" ref="employee_prof_Fatima"/>
+        <field name="equipment_type">computer</field>
+        <field name="serial_number">APPLE-MBP-00987</field>
+        <field name="assignment_date">2024-01-10</field>
+        <field name="condition">excellent</field>
+        <field name="state">assigned</field>
+        <field name="value">7200</field>
+        <field name="warranty_expiry">2026-01-10</field>
+        <field name="notes">Development workstation for AI/ML research and software engineering</field>
+    </record>
+
+    <record id="equipment_lab_oscilloscope" model="ensa.equipment">
+        <field name="name">Rigol DS1054Z Digital Oscilloscope</field>
+        <field name="employee_id" ref="employee_lab_tech"/>
+        <field name="equipment_type">tools</field>
+        <field name="serial_number">OSC-RIGOL-1054Z</field>
+        <field name="assignment_date">2023-03-20</field>
+        <field name="condition">excellent</field>
+        <field name="state">assigned</field>
+        <field name="value">3500</field>
+        <field name="warranty_expiry">2025-03-20</field>
+        <field name="notes">Electronic testing equipment for laboratory measurements</field>
+    </record>
+
+    <!-- DEMO DATA: Student Projects -->
+    <record id="project_smart_building" model="ensa.student.project">
+        <field name="name">PROJ/00001</field>
+        <field name="title">Smart Building Automation System</field>
+        <field name="description">IoT-based building automation integrating temperature, lighting, and security systems</field>
+        <field name="supervisor_id" ref="employee_prof_Fatima"/>
+        <field name="start_date">2024-09-01</field>
+        <field name="end_date">2025-05-30</field>
+        <field name="status">in_progress</field>
+        <field name="domain">IoT &amp; Smart Systems</field>
+        <field name="budget">50000</field>
+        <field name="technology_stack">Python, Arduino, MQTT, Node-RED, Home Assistant</field>
+    </record>
+
+    <record id="project_bridge_design" model="ensa.student.project">
+        <field name="name">PROJ/00002</field>
+        <field name="title">Parametric Bridge Design and Analysis</field>
+        <field name="description">Advanced structural analysis using parametric design tools for optimal load distribution</field>
+        <field name="supervisor_id" ref="employee_prof_Ahmed"/>
+        <field name="start_date">2024-10-15</field>
+        <field name="end_date">2025-06-15</field>
+        <field name="status">in_progress</field>
+        <field name="domain">Structural Engineering</field>
+        <field name="budget">35000</field>
+        <field name="technology_stack">Revit, AutoCAD, SAP2000, Dynamo, Python</field>
+    </record>
+
+    <!-- DEMO DATA: Internships -->
+    <record id="internship_student1" model="ensa.internship">
+        <field name="name">INT/00001</field>
+        <field name="student_name">Youssef Bennani</field>
+        <field name="student_email">youssef.bennani@ensa.ma</field>
+        <field name="level">3rd Year</field>
+        <field name="specialization">Civil Engineering</field>
+        <field name="host_company">Tamasna Engineering &amp; Construction</field>
+        <field name="start_date">2024-06-01</field>
+        <field name="end_date">2024-08-31</field>
+        <field name="duration">3</field>
+        <field name="status">completed</field>
+        <field name="supervisor_id" ref="employee_prof_Ahmed"/>
+        <field name="internship_type">industrial</field>
+        <field name="description">Project Engineering: Structural design and site supervision for commercial complex</field>
+        <field name="report_score">8.5</field>
+        <field name="learning_outcomes">Gained practical experience in BIM implementation, site coordination, and structural calculations</field>
+    </record>
+
+    <record id="internship_student2" model="ensa.internship">
+        <field name="name">INT/00002</field>
+        <field name="student_name">Layla Idrissi</field>
+        <field name="student_email">layla.idrissi@ensa.ma</field>
+        <field name="level">2nd Year</field>
+        <field name="specialization">Computer Engineering</field>
+        <field name="host_company">Maroc Telecom - Innovation Lab</field>
+        <field name="start_date">2024-07-01</field>
+        <field name="end_date">2024-08-31</field>
+        <field name="duration">2</field>
+        <field name="status">completed</field>
+        <field name="supervisor_id" ref="employee_prof_Fatima"/>
+        <field name="internship_type">industrial</field>
+        <field name="description">Software Development: Mobile app development for telecom services</field>
+        <field name="report_score">9.0</field>
+        <field name="learning_outcomes">Mastered Flutter framework, API integration, agile methodology</field>
+    </record>
+
+    <!-- DEMO DATA: Certifications -->
+    <record id="cert_prof_ahmed" model="ensa.employee.certification">
+        <field name="name">PE License - Structural Engineering</field>
+        <field name="issuing_body">Morocco Board of Professional Engineers</field>
+        <field name="issue_date">2015-03-15</field>
+        <field name="expiry_date">2026-03-15</field>
+        <field name="employee_id" ref="employee_prof_Ahmed"/>
+        <field name="verification_notes">Valid professional license for structural design and supervision</field>
+    </record>
+
+    <record id="cert_prof_fatima" model="ensa.employee.certification">
+        <field name="name">AWS Certified Solutions Architect</field>
+        <field name="issuing_body">Amazon Web Services</field>
+        <field name="issue_date">2023-06-10</field>
+        <field name="expiry_date">2026-06-10</field>
+        <field name="employee_id" ref="employee_prof_Fatima"/>
+        <field name="verification_notes">Professional certification for cloud architecture and AI services</field>
+    </record>
+
+</odoo>

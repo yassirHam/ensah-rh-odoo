@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <defs>
+        <style>
+            .icon-bg { fill: #667eea; }
+            .icon-fg { fill: white; }
+        </style>
+    </defs>
+    <rect class="icon-bg" width="128" height="128" rx="10"/>
+    <g class="icon-fg" transform="translate(20, 20) scale(0.8)">
+        <!-- Simple HR icon: person with briefcase -->
+        <circle cx="32" cy="16" r="8"/>
+        <path d="M 20 30 L 20 40 L 44 40 L 44 30 Q 44 24 38 24 L 26 24 Q 20 24 20 30 Z"/>
+        <path d="M 36 40 L 36 50 L 28 50 L 28 40"/>
+    </g>
+</svg>

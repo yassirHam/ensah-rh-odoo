@@ -1,0 +1,217 @@
+<odoo>
+    <!-- Evaluation Tree View -->
+    <record id="view_evaluation_tree" model="ir.ui.view">
+        <field name="name">ensa.evaluation.tree</field>
+        <field name="model">ensa.evaluation</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='completed'" 
+                  decoration-warning="state=='reviewed'" 
+                  decoration-info="state=='submitted'"
+                  decoration-danger="state=='draft'">
+                <field name="name" invisible="1"/>
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="date"/>
+                <field name="overall_score" widget="progressbar" options="{'max': 10}"/>
+                <field name="evaluator_id" invisible="1"/>
+                <field name="state"/>
+                <field name="recommendation" widget="badge" 
+                       decoration-success="recommendation=='promote'"
+                       decoration-primary="recommendation=='retain'"
+                       decoration-warning="recommendation=='improve'"
+                       decoration-danger="recommendation=='replace'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Evaluation Form View -->
+    <record id="view_evaluation_form" model="ir.ui.view">
+        <field name="name">ensa.evaluation.form</field>
+        <field name="model">ensa.evaluation</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Performance Evaluation" class="o_evaluation_form">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}" 
+                           statusbar_visible="draft,submitted,approved,reviewed,completed"/>
+                    <button name="action_submit" type="object" string="Submit for Approval" 
+                            class="oe_highlight" 
+                            invisible="state != 'draft'"
+                            icon="fa-paper-plane"/>
+                    <button name="action_approve" type="object" string="Approve" 
+                            class="oe_highlight" 
+                            invisible="state != 'submitted'"
+                            icon="fa-check"/>
+                    <button name="action_reject" type="object" string="Reject" 
+                            class="btn-danger" 
+                            invisible="state != 'submitted'"
+                            icon="fa-times"/>
+                    <button name="action_review" type="object" string="Mark as Reviewed" 
+                            class="oe_highlight" 
+                            invisible="state != 'approved'"
+                            icon="fa-eye"/>
+                    <button name="action_complete" type="object" string="Complete Evaluation" 
+                            class="oe_highlight" 
+                            invisible="state != 'reviewed'"
+                            icon="fa-check-circle"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" 
+                            invisible="state == 'draft'"
+                            icon="fa-undo"/>
+                </header>
+                <sheet>
+                    <div class="oe_title mb16">
+                        <h1>
+                            <field name="name" readonly="1" class="oe_inline"/>
+                        </h1>
+                        <h3 class="text-muted">
+                            Evaluation for <field name="employee_id" class="oe_inline" options="{'no_create': True}"/>
+                            on <field name="date" class="oe_inline"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="evaluator_id" options="{'no_create': True}"/>
+                            <field name="approval_manager_id" options="{'no_create': True}"
+                                   help="Select the manager who will approve this evaluation"
+                                   required="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="approval_date" readonly="1" invisible="state == 'draft'"/>
+                            <field name="overall_score" widget="gauge_chart" 
+                                   options="{'min': 0, 'max': 10, 'color': 'green'}"
+                                   invisible="state == 'draft'"/>
+                            <field name="recommendation" widget="badge"
+                                   invisible="state == 'draft'"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Evaluation Criteria">
+                            <group string="Performance Metrics" class="mt16">
+                                <group>
+                                    <field name="technical_score" widget="slider" 
+                                           options="{'min': 0, 'max': 10, 'step': 0.5}"/>
+                                    <field name="productivity_score" widget="slider" 
+                                           options="{'min': 0, 'max': 10, 'step': 0.5}"/>
+                                    <field name="teamwork_score" widget="slider" 
+                                           options="{'min': 0, 'max': 10, 'step': 0.5}"/>
+                                </group>
+                                <group>
+                                    <field name="innovation_score" widget="slider" 
+                                           options="{'min': 0, 'max': 10, 'step': 0.5}"/>
+                                    <field name="attendance_score" widget="slider" 
+                                           options="{'min': 0, 'max': 10, 'step': 0.5}"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Comments &amp; Feedback" class="mt16">
+                                <field name="comments" widget="text_area" placeholder="Detailed evaluator comments..."/>
+                                <field name="improvement_plan" widget="text_area" placeholder="Specific improvement actions with timelines..."/>
+                            </group>
+                            
+                            <group string="Manager Approval Comments" class="mt16" invisible="state == 'draft'">
+                                <field name="approval_comments" widget="text_area" 
+                                       placeholder="Manager comments during approval process..."
+                                       readonly="state != 'submitted'"/>
+                            </group>
+                        </page>
+                        
+                        <page string="AI Insights" invisible="state == 'draft'">
+                            <div class="alert alert-primary d-flex align-items-start">
+                                <i class="fa fa-robot fa-2x mr-3 mt-1 text-info"/>
+                                <div>
+                                    <h5>AI Performance Analysis</h5>
+                                    <field name="ai_insights" widget="html" nolabel="1" class="mb-0" readonly="1"/>
+                                </div>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Evaluation Kanban View -->
+    <record id="view_evaluation_kanban" model="ir.ui.view">
+        <field name="name">ensa.evaluation.kanban</field>
+        <field name="model">ensa.evaluation</field>
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_dashboard">
+                <field name="employee_id"/>
+                <field name="evaluator_id"/>
+                <field name="date"/>
+                <field name="overall_score"/>
+                <field name="recommendation"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="card border-left-{{ record.recommendation.raw_value == 'promote' ? 'success' : 
+                                              record.recommendation.raw_value == 'retain' ? 'primary' : 
+                                              record.recommendation.raw_value == 'improve' ? 'warning' : 'danger' }} shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+                                                <field name="employee_id"/>
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <field name="name"/>
+                                            </div>
+                                            <div class="mt2">
+                                                <field name="date" widget="relative_date"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <span class="badge bg-{{ record.state.raw_value == 'draft' ? 'secondary' : 
+                                                                      record.state.raw_value == 'submitted' ? 'info' : 
+                                                                      record.state.raw_value == 'reviewed' ? 'warning' : 'success' }} 
+                                                  text-white p-2">
+                                                <field name="state"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="progress mt3" style="height: 8px;">
+                                        <div class="progress-bar bg-{{ record.overall_score.value >= 8.5 ? 'success' : 
+                                                                        record.overall_score.value >= 7 ? 'primary' : 
+                                                                        record.overall_score.value >= 5 ? 'warning' : 'danger' }}" 
+                                             role="progressbar" 
+                                             t-att-style="'width: ' + (record.overall_score.raw_value * 10) + '%'"
+                                             t-att-aria-valuenow="record.overall_score.raw_value"
+                                             aria-valuemin="0" aria-valuemax="10">
+                                        </div>
+                                    </div>
+                                    <div class="mt2 text-center font-weight-bold">
+                                        <span t-esc="record.overall_score.raw_value.toFixed(1)"/>/10
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Evaluation Actions -->
+    <record id="action_ensa_evaluation" model="ir.actions.act_window">
+        <field name="name">Performance Evaluations</field>
+        <field name="res_model">ensa.evaluation</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="view_id" ref="view_evaluation_kanban"/>
+        <field name="context">{'default_date': context_today().strftime('%Y-%m-%d')}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first performance evaluation
+            </p><p>
+                Track employee performance and development with AI-powered insights.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,216 @@
+<odoo>
+    <!-- Equipment Tree View -->
+    <record id="view_equipment_tree" model="ir.ui.view">
+        <field name="name">ensa.equipment.tree</field>
+        <field name="model">ensa.equipment</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='assigned'" 
+                  decoration-warning="state=='returned'"
+                  decoration-danger="state in ('damaged', 'lost')">
+                <field name="name"/>
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="serial_number"/>
+                <field name="equipment_type"/>
+                <field name="assignment_date"/>
+                <field name="return_date"/>
+                <field name="condition"/>
+                <field name="state"/>
+                <field name="value" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Equipment Form View -->
+    <record id="view_equipment_form" model="ir.ui.view">
+        <field name="name">ensa.equipment.form</field>
+        <field name="model">ensa.equipment</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Equipment Assignment">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}" 
+                           statusbar_visible="assigned,returned,damaged,lost"/>
+                    <button name="action_return" type="object" string="Return Equipment" 
+                            class="oe_highlight" icon="fa-undo"
+                            invisible="state != 'assigned'" />
+                    <button name="action_report_damaged" type="object" string="Report Damaged" 
+                            class="btn-warning" icon="fa-exclamation-triangle"
+                            invisible="state in ('returned', 'damaged', 'lost')" />
+                    <button name="action_report_lost" type="object" string="Report Lost" 
+                            class="btn-danger" icon="fa-exclamation-circle"
+                            invisible="state in ('returned', 'damaged', 'lost')" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" 
+                                   options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="Warranty Expired" bg_color="text-bg-danger" 
+                            invisible="warranty_expiry and warranty_expiry &lt;= context_today()"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" required="1" placeholder="Equipment Name"/>
+                        </h1>
+                        <h3 class="text-muted">
+                            <field name="equipment_type" class="oe_inline"/>
+                            <span invisible="not serial_number"> • </span>
+                            <field name="serial_number" class="oe_inline" placeholder="Serial Number"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="employee_id" options="{'no_create': True}" required="1"/>
+                            <field name="assignment_date" required="1"/>
+                            <field name="condition"/>
+                            <field name="warranty_expiry" widget="remaining_days"/>
+                        </group>
+                        <group>
+                            <field name="return_date"/>
+                            <field name="return_condition"/>
+                            <field name="value" widget="monetary"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Equipment Details" class="mt16">
+                        <field name="notes" widget="text_area" placeholder="Additional notes about this equipment..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Equipment Kanban View -->
+    <record id="view_equipment_kanban" model="ir.ui.view">
+        <field name="name">ensa.equipment.kanban</field>
+        <field name="model">ensa.equipment</field>
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_dashboard" 
+                    on_create="quick_create" quick_create_view="view_equipment_kanban_quick_create">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="equipment_type"/>
+                <field name="assignment_date"/>
+                <field name="serial_number"/>
+                <field name="value"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="card border-left-{{ record.state.raw_value == 'assigned' ? 'success' : 
+                                              record.state.raw_value == 'returned' ? 'info' : 
+                                              record.state.raw_value == 'damaged' ? 'warning' : 'danger' }} shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col">
+                                            <div class="text-xs font-weight-bold text-uppercase mb-1">
+                                                <field name="name"/>
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <i class="fa fa-{{ record.equipment_type.raw_value == 'computer' ? 'laptop' : 
+                                                                  record.equipment_type.raw_value == 'phone' ? 'mobile' : 
+                                                                  record.equipment_type.raw_value == 'vehicle' ? 'car' : 
+                                                                  record.equipment_type.raw_value == 'tools' ? 'wrench' : 'box' }} mr-1"/>
+                                                <field name="serial_number"/>
+                                            </div>
+                                            <div class="mt2">
+                                                <span class="badge bg-primary">
+                                                    <field name="employee_id"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <span class="badge bg-{{ record.state.raw_value == 'assigned' ? 'success' : 
+                                                                      record.state.raw_value == 'returned' ? 'info' : 
+                                                                      record.state.raw_value == 'damaged' ? 'warning' : 'danger' }} 
+                                                  text-white p-2">
+                                                <field name="state"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mt3">
+                                        <span class="text-xs text-muted">
+                                            Assigned: <field name="assignment_date" widget="relative_date"/>
+                                        </span>
+                                        <br/>
+                                        <span t-if="record.return_date.raw_value" class="text-xs text-muted">
+                                            Returned: <field name="return_date" widget="relative_date"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Equipment Quick Create View -->
+    <record id="view_equipment_kanban_quick_create" model="ir.ui.view">
+        <field name="name">ensa.equipment.kanban.quick_create</field>
+        <field name="model">ensa.equipment</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name" required="1" placeholder="Equipment Name"/>
+                    <field name="employee_id" required="1" options="{'no_create': True}"/>
+                    <field name="equipment_type"/>
+                    <field name="serial_number"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Equipment Actions -->
+    <record id="action_ensa_equipment" model="ir.actions.act_window">
+        <field name="name">Equipment Management</field>
+        <field name="res_model">ensa.equipment</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="view_id" ref="view_equipment_kanban"/>
+        <field name="context">{'default_assignment_date': context_today().strftime('%Y-%m-%d')}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Assign your first equipment
+            </p><p>
+                Track all company assets assigned to employees with full lifecycle management.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Equipment Search View -->
+    <record id="view_equipment_search" model="ir.ui.view">
+        <field name="name">ensa.equipment.search</field>
+        <field name="model">ensa.equipment</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="serial_number"/>
+                <field name="employee_id"/>
+                <field name="equipment_type"/>
+                <filter string="Assigned" name="assigned" domain="[('state','=','assigned')]"/>
+                <filter string="Needs Maintenance" name="maintenance" domain="[('warranty_expiry','&lt;',context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'equipment_type'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Condition" name="group_condition" context="{'group_by': 'condition'}"/>
+                    <filter string="Assignment Month" name="group_month" context="{'group_by': 'assignment_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

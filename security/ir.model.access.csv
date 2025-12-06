@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ensa_evaluation_user,ensa.evaluation.user,model_ensa_evaluation,base.group_user,1,0,0,0
+access_ensa_evaluation_officer,ensa.evaluation.officer,model_ensa_evaluation,hr.group_hr_user,1,1,1,0
+access_ensa_evaluation_manager,ensa.evaluation.manager,model_ensa_evaluation,hr.group_hr_manager,1,1,1,1
+access_ensa_training_user,ensa.training.user,model_ensa_training,base.group_user,1,0,0,0
+access_ensa_training_officer,ensa.training.officer,model_ensa_training,hr.group_hr_user,1,1,1,0
+access_ensa_training_manager,ensa.training.manager,model_ensa_training,hr.group_hr_manager,1,1,1,1
+access_ensa_equipment_user,ensa.equipment.user,model_ensa_equipment,base.group_user,1,0,0,0
+access_ensa_equipment_officer,ensa.equipment.officer,model_ensa_equipment,hr.group_hr_user,1,1,1,0
+access_ensa_equipment_manager,ensa.equipment.manager,model_ensa_equipment,hr.group_hr_manager,1,1,1,1
+access_ensa_dashboard_user,ensa.dashboard.user,model_ensa_dashboard,base.group_user,1,0,0,0
+access_ensa_dashboard_manager,ensa.dashboard.manager,model_ensa_dashboard,hr.group_hr_manager,1,0,0,0
