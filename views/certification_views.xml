@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Certification Tree View -->
+    <record id="view_ensa_certification_tree" model="ir.ui.view">
+        <field name="name">ensa.employee.certification.tree</field>
+        <field name="model">ensa.employee.certification</field>
+        <field name="arch" type="xml">
+            <tree string="Certifications">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="issuing_body"/>
+                <field name="issue_date"/>
+                <field name="expiry_date" widget="remaining_days"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Certification Form View -->
+    <record id="view_ensa_certification_form" model="ir.ui.view">
+        <field name="name">ensa.employee.certification.form</field>
+        <field name="model">ensa.employee.certification</field>
+        <field name="arch" type="xml">
+            <form string="Certification">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Certification Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="issuing_body"/>
+                        </group>
+                        <group>
+                            <field name="issue_date"/>
+                            <field name="expiry_date"/>
+                        </group>
+                    </group>
+                    <separator string="Verification"/>
+                    <field name="verification_notes" placeholder="Notes regarding verification of this certification..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Certification Search View -->
+    <record id="view_ensa_certification_search" model="ir.ui.view">
+        <field name="name">ensa.employee.certification.search</field>
+        <field name="model">ensa.employee.certification</field>
+        <field name="arch" type="xml">
+            <search string="Search Certifications">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="issuing_body"/>
+                <filter string="Valid" name="valid" domain="['|', ('expiry_date', '=', False), ('expiry_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Expired" name="expired" domain="[('expiry_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_issuing_body" string="Issuing Body" context="{'group_by': 'issuing_body'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

@@ -10,3 +10,5 @@ access_ensa_equipment_officer,ensa.equipment.officer,model_ensa_equipment,hr.gro
 access_ensa_equipment_manager,ensa.equipment.manager,model_ensa_equipment,hr.group_hr_manager,1,1,1,1
 access_ensa_dashboard_user,ensa.dashboard.user,model_ensa_dashboard,base.group_user,1,0,0,0
 access_ensa_dashboard_manager,ensa.dashboard.manager,model_ensa_dashboard,hr.group_hr_manager,1,0,0,0
+access_ensa_certification_user,ensa.certification.user,model_ensa_employee_certification,base.group_user,1,0,0,0
+access_ensa_certification_officer,ensa.certification.officer,model_ensa_employee_certification,hr.group_hr_user,1,1,1,1

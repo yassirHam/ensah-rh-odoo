@@ -62,12 +62,16 @@ class StudentInternship(models.Model):
 
     def action_start(self):
         self.write({'status': 'in_progress'})
+        self.message_post(body=_("Internship started."))
 
     def action_complete(self):
         self.write({'status': 'completed'})
+        self.message_post(body=_("Internship completed successfully."))
 
     def action_suspend(self):
         self.write({'status': 'suspended'})
+        self.message_post(body=_("Internship suspended."))
 
     def action_cancel(self):
         self.write({'status': 'cancelled'})
+        self.message_post(body=_("Internship cancelled."))

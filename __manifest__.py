@@ -25,13 +25,14 @@
     'security/security.xml',
     'security/ir.model.access.csv',
     'data/data.xml',
-    'data/email_templates.xml',  # NEW: Email notification templates
+    # 'data/email_templates.xml',  # TEMPORARILY DISABLED: XML schema validation issue
     'views/evaluation_views.xml',
     'views/training_views.xml',
     'views/equipment_views.xml',
     'views/employee_views.xml',         # Must come before menu (menu references action_ensa_employee_analysis)
     'views/student_project_views.xml',  # NEW: Student projects UI
     'views/internship_views.xml',       # NEW: Internships UI
+    'views/certification_views.xml',    # NEW: Certification UI (Must be before analytics)
     'views/analytics_views.xml',        # NEW: Department analytics dashboards
     'views/dashboard_views.xml',
     'views/menu.xml',                   # Must come after all view files

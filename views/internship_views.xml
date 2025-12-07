@@ -1,89 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Internship Tree View -->
+    <!-- Tree View -->
     <record id="view_ensa_internship_tree" model="ir.ui.view">
-        <field name="name">Internship List</field>
+        <field name="name">ensa.internship.tree</field>
         <field name="model">ensa.internship</field>
         <field name="arch" type="xml">
-            <tree string="Internships" decoration-info="status == 'planned'" decoration-success="status == 'completed'" decoration-warning="status == 'suspended'" decoration-danger="status == 'cancelled'">
+            <tree string="Internships" decoration-success="status == 'completed'" decoration-warning="status == 'suspended'" decoration-danger="status == 'cancelled'">
                 <field name="name"/>
                 <field name="student_name"/>
                 <field name="host_company"/>
-                <field name="internship_type"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
-                <field name="duration"/>
-                <field name="report_score"/>
-                <field name="status"/>
+                <field name="supervisor_id"/>
+                <field name="status" widget="badge"/>
             </tree>
         </field>
     </record>
 
-    <!-- Internship Form View -->
+    <!-- Form View -->
     <record id="view_ensa_internship_form" model="ir.ui.view">
-        <field name="name">Internship Form</field>
+        <field name="name">ensa.internship.form</field>
         <field name="model">ensa.internship</field>
         <field name="arch" type="xml">
             <form string="Internship">
                 <header>
-                    <button name="action_start" type="object" string="Start Internship" class="btn-primary" invisible="status != 'planned'"/>
-                    <button name="action_complete" type="object" string="Complete Internship" class="btn-success" invisible="status != 'in_progress'"/>
-                    <button name="action_suspend" type="object" string="Suspend" invisible="status in ('completed', 'cancelled')"/>
-                    <button name="action_cancel" type="object" string="Cancel" invisible="status in ('completed', 'cancelled')"/>
-                    <field name="status" widget="statusbar" options="{'clickable': False}"/>
+                    <button name="action_start" string="Start Internship" type="object" class="oe_highlight" invisible="status != 'planned'"/>
+                    <button name="action_complete" string="Complete" type="object" class="oe_highlight" invisible="status != 'in_progress'"/>
+                    <button name="action_suspend" string="Suspend" type="object" invisible="status != 'in_progress'"/>
+                    <button name="action_start" string="Resume" type="object" invisible="status != 'suspended'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="status in ('completed', 'cancelled')"/>
+                    <field name="status" widget="statusbar" statusbar_visible="planned,in_progress,completed"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="student_name" placeholder="Student Name"/>
+                            <field name="name" readonly="1"/>
                         </h1>
+                        <h2>
+                            <field name="student_name"/>
+                        </h2>
                     </div>
                     <group>
                         <group>
-                            <field name="name" readonly="1"/>
                             <field name="student_email"/>
-                            <field name="level" placeholder="e.g., 3rd Year, 2nd Year"/>
-                            <field name="specialization" placeholder="Engineering Specialization"/>
-                        </group>
-                        <group>
-                            <field name="host_company" required="1"/>
+                            <field name="level"/>
+                            <field name="specialization"/>
                             <field name="internship_type"/>
+                        </group>
+                        <group>
+                            <field name="host_company"/>
                             <field name="supervisor_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration"/>
                         </group>
-                    </group>
-                    <group>
-                        <group>
-                            <field name="start_date" required="1"/>
-                            <field name="end_date" required="1"/>
-                            <field name="duration" help="Duration in months"/>
-                        </group>
-                        <group>
-                            <field name="report_score" help="Score on 0-20 scale"/>
-                        </group>
-                    </group>
-                    <group>
-                        <field name="description" nolabel="1" placeholder="Internship project description and responsibilities"/>
                     </group>
                     <notebook>
-                        <page string="Learning &amp; Outcomes">
-                            <group>
-                                <field name="learning_outcomes" nolabel="1" placeholder="Key learning outcomes and skills acquired"/>
-                            </group>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Internship description and responsibilities..."/>
                         </page>
-                        <page string="Tracking">
+                        <page string="Evaluation" name="evaluation">
                             <group>
-                                <field name="created_date" readonly="1"/>
-                                <field name="modified_date" readonly="1"/>
+                                <field name="report_score"/>
+                                <field name="learning_outcomes"/>
                             </group>
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
 
-    <!-- Internship Search Filter -->
+    <!-- Kanban View -->
+    <record id="view_ensa_internship_kanban" model="ir.ui.view">
+        <field name="name">ensa.internship.kanban</field>
+        <field name="model">ensa.internship</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="student_name"/>
+                <field name="host_company"/>
+                <field name="status"/>
+                <field name="supervisor_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="student_name"/>
+                                </strong>
+                                <div>
+                                    <span class="text-muted"><field name="host_company"/></span>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="name"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="supervisor_id" widget="many2one_avatar_user"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
     <record id="view_ensa_internship_search" model="ir.ui.view">
-        <field name="name">Internship Search</field>
+        <field name="name">ensa.internship.search</field>
         <field name="model">ensa.internship</field>
         <field name="arch" type="xml">
             <search string="Search Internships">
@@ -91,43 +124,27 @@
                 <field name="student_name"/>
                 <field name="host_company"/>
                 <field name="supervisor_id"/>
-                <field name="specialization"/>
-                <filter name="status_planned" string="Planned" domain="[('status', '=', 'planned')]"/>
-                <filter name="status_in_progress" string="In Progress" domain="[('status', '=', 'in_progress')]"/>
-                <filter name="status_completed" string="Completed" domain="[('status', '=', 'completed')]"/>
-                <filter name="status_suspended" string="Suspended" domain="[('status', '=', 'suspended')]"/>
-                <filter name="status_cancelled" string="Cancelled" domain="[('status', '=', 'cancelled')]"/>
-                <separator/>
-                <filter name="type_industrial" string="Industrial" domain="[('internship_type', '=', 'industrial')]"/>
-                <filter name="type_research" string="Research" domain="[('internship_type', '=', 'research')]"/>
-                <filter name="type_academic" string="Academic" domain="[('internship_type', '=', 'academic')]"/>
-                <separator/>
-                <filter name="upcoming_internships" string="Upcoming" domain="[('start_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
-                <filter name="my_supervised_internships" string="My Supervised" domain="[('supervisor_id', '=', uid)]"/>
-                <filter name="high_performers" string="High Performance (Score &gt;= 8)" domain="[('report_score', '&gt;=', 8)]"/>
+                <filter string="My Internships" name="my_internships" domain="[('supervisor_id.user_id', '=', uid)]"/>
+                <filter string="In Progress" name="in_progress" domain="[('status', '=', 'in_progress')]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_status" string="Status" context="{'group_by': 'status'}"/>
-                    <filter name="group_by_type" string="Internship Type" context="{'group_by': 'internship_type'}"/>
-                    <filter name="group_by_supervisor" string="Supervisor" context="{'group_by': 'supervisor_id'}"/>
-                    <filter name="group_by_company" string="Host Company" context="{'group_by': 'host_company'}"/>
-                    <filter name="group_by_specialization" string="Specialization" context="{'group_by': 'specialization'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'status'}"/>
+                    <filter string="Company" name="group_by_company" context="{'group_by': 'host_company'}"/>
+                    <filter string="Supervisor" name="group_by_supervisor" context="{'group_by': 'supervisor_id'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Internship List Action -->
+    <!-- Action -->
     <record id="action_ensa_internship" model="ir.actions.act_window">
         <field name="name">Internships</field>
         <field name="res_model">ensa.internship</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_ensa_internship_tree"/>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="view_ensa_internship_search"/>
         <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                Create a new internship record to track student placements and internship outcomes.
+            <p class="o_view_nocontent_smiling_face">
+                Create a new internship record
             </p>
         </field>
     </record>
-
 </odoo>

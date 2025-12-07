@@ -23,6 +23,13 @@ class HrEmployee(models.Model):
     training_count = fields.Integer(compute='_compute_training_count', string="Completed Trainings")
     # Add this field to properly link evaluations to employees
     evaluation_ids = fields.One2many('ensa.evaluation', 'employee_id', string="Evaluations")
+    
+    # New relationships for smart buttons
+    student_project_ids = fields.One2many('ensa.student.project', 'supervisor_id', string="Supervised Projects")
+    project_count = fields.Integer(compute='_compute_project_count', string="Projects Count")
+    
+    internship_ids = fields.One2many('ensa.internship', 'supervisor_id', string="Supervised Internships")
+    internship_count = fields.Integer(compute='_compute_internship_count', string="Internships Count")
 
     # Performance trend tracking
     avg_performance_score = fields.Float(string="Average Performance Score", compute="_compute_performance_metrics", store=True)
@@ -56,6 +63,16 @@ class HrEmployee(models.Model):
     def _compute_training_count(self):
         for employee in self:
             employee.training_count = len(employee.training_ids)
+
+    @api.depends('student_project_ids')
+    def _compute_project_count(self):
+        for employee in self:
+            employee.project_count = len(employee.student_project_ids)
+
+    @api.depends('internship_ids')
+    def _compute_internship_count(self):
+        for employee in self:
+            employee.internship_count = len(employee.internship_ids)
 
     @api.depends('evaluation_ids.overall_score', 'evaluation_ids.date', 'evaluation_ids.state')
     def _compute_performance_metrics(self):
@@ -150,6 +167,26 @@ class HrEmployee(models.Model):
             'domain': [('employee_id', '=', self.id)],
             'type': 'ir.actions.act_window',
             'context': {'default_employee_id': self.id}
+        }
+
+    def action_view_projects(self):
+        return {
+            'name': _('Supervised Projects'),
+            'view_mode': 'kanban,tree,form',
+            'res_model': 'ensa.student.project',
+            'domain': [('supervisor_id', '=', self.id)],
+            'type': 'ir.actions.act_window',
+            'context': {'default_supervisor_id': self.id}
+        }
+
+    def action_view_internships(self):
+        return {
+            'name': _('Supervised Internships'),
+            'view_mode': 'kanban,tree,form',
+            'res_model': 'ensa.internship',
+            'domain': [('supervisor_id', '=', self.id)],
+            'type': 'ir.actions.act_window',
+            'context': {'default_supervisor_id': self.id}
         }
 
 class EmployeeCertification(models.Model):

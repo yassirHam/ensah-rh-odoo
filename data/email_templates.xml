@@ -1,270 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Email Template: Evaluation Submitted -->
     <record id="email_template_evaluation_submitted" model="mail.template">
         <field name="name">Evaluation Submitted for Approval</field>
-        <field name="email_from">{{ (object.env.company.email or object.evaluator_id.user_id.email) }}</field>
-        <field name="email_to">{{ object.approval_manager_id.user_id.email }}</field>
-        <field name="subject">Performance Evaluation Pending Your Approval - {{ object.employee_id.name }}</field>
         <field name="model_id" ref="model_ensa_evaluation"/>
-        <field name="body_html" type="html">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td style="padding: 10px; font-family: 'Lucida Grande', Ubuntu, Arial, sans-serif; font-size: 14px;">
-                            <p>Dear {{ object.approval_manager_id.name }},</p>
-                            <p>A performance evaluation for <strong>{{ object.employee_id.name }}</strong> has been submitted and is awaiting your approval.</p>
-                            
-                            <table border="1" cellpadding="10" cellspacing="0" width="100%" style="background-color: #f7f7f7; margin: 20px 0;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Evaluation Reference:</td>
-                                        <td>{{ object.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Employee:</td>
-                                        <td>{{ object.employee_id.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Evaluation Date:</td>
-                                        <td>{{ object.date }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Overall Score:</td>
-                                        <td>{{ "%.1f" % object.overall_score }}/10</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Evaluator Recommendation:</td>
-                                        <td>
-                                            {% if object.recommendation == 'promote' %}
-                                            <span style="background-color: #51a881; color: white; padding: 5px 10px; border-radius: 3px;">Recommend for Promotion</span>
-                                            {% elif object.recommendation == 'retain' %}
-                                            <span style="background-color: #5b9fd4; color: white; padding: 5px 10px; border-radius: 3px;">Retain Current Position</span>
-                                            {% elif object.recommendation == 'improve' %}
-                                            <span style="background-color: #f4a460; color: white; padding: 5px 10px; border-radius: 3px;">Needs Improvement</span>
-                                            {% else %}
-                                            <span style="background-color: #e74c3c; color: white; padding: 5px 10px; border-radius: 3px;">Consider Replacement</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                            <p><strong>Performance Scores:</strong></p>
-                            <ul>
-                                <li>Technical Skills: {{ object.technical_score or 'N/A' }}/10</li>
-                                <li>Productivity: {{ object.productivity_score or 'N/A' }}/10</li>
-                                <li>Teamwork: {{ object.teamwork_score or 'N/A' }}/10</li>
-                                <li>Innovation: {{ object.innovation_score or 'N/A' }}/10</li>
-                                <li>Attendance: {{ object.attendance_score or 'N/A' }}/10</li>
-                            </ul>
-                            
-                            {% if object.comments %}
-                            <p><strong>Evaluator Comments:</strong></p>
-                            <p style="background-color: #f9f9f9; padding: 10px; border-left: 3px solid #5b9fd4;">{{ object.comments }}</p>
-                            {% endif %}
-                            
-                            <p>Please review this evaluation and either approve or reject it. If you have questions, please contact the evaluator at {{ object.evaluator_id.user_id.email }}.</p>
-                            
-                            <p style="text-align: center; margin-top: 30px;">
-                                <a href="${object.get_portal_url()}" style="background-color: #5b9fd4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px;">View Evaluation in Portal</a>
-                            </p>
-                            
-                            <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                                This is an automated message. Please do not reply to this email.
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </field>
+        <field name="subject">Performance Evaluation Pending Approval</field>
+        <field name="body_html" type="html">&lt;p&gt;Dear Manager, an evaluation has been submitted.&lt;/p&gt;</field>
     </record>
 
-    <!-- Email Template: Evaluation Approved -->
     <record id="email_template_evaluation_approved" model="mail.template">
         <field name="name">Performance Evaluation Approved</field>
-        <field name="email_from">{{ (object.env.company.email or object.approval_manager_id.user_id.email) }}</field>
-        <field name="email_to">{{ object.employee_id.user_id.email }}</field>
-        <field name="subject">Your Performance Evaluation - {{ object.date.strftime('%B %Y') }}</field>
         <field name="model_id" ref="model_ensa_evaluation"/>
-        <field name="body_html" type="html">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td style="padding: 10px; font-family: 'Lucida Grande', Ubuntu, Arial, sans-serif; font-size: 14px;">
-                            <p>Dear {{ object.employee_id.name }},</p>
-                            <p>Your performance evaluation for <strong>{{ object.date.strftime('%B %Y') }}</strong> has been completed and approved.</p>
-                            
-                            <table border="1" cellpadding="10" cellspacing="0" width="100%" style="background-color: #f7f7f7; margin: 20px 0;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Overall Score:</td>
-                                        <td>
-                                            <strong style="font-size: 16px; color: {% if object.overall_score >= 8.5 %}#51a881{% elif object.overall_score >= 7.0 %}#5b9fd4{% elif object.overall_score >= 5.0 %}#f4a460{% else %}#e74c3c{% endif %};">{{ "%.1f" % object.overall_score }}/10</strong>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Performance Recommendation:</td>
-                                        <td>
-                                            {% if object.recommendation == 'promote' %}
-                                            <strong style="color: #51a881;">Recommend for Promotion</strong>
-                                            {% elif object.recommendation == 'retain' %}
-                                            <strong style="color: #5b9fd4;">Strong Performer - Retain in Current Position</strong>
-                                            {% elif object.recommendation == 'improve' %}
-                                            <strong style="color: #f4a460;">Needs Improvement in Key Areas</strong>
-                                            {% else %}
-                                            <strong style="color: #e74c3c;">Performance Requires Immediate Attention</strong>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            
-                            {% if object.improvement_plan %}
-                            <p><strong>Improvement Plan:</strong></p>
-                            <p style="background-color: #fff3cd; padding: 10px; border-left: 3px solid #f4a460;">{{ object.improvement_plan }}</p>
-                            {% endif %}
-                            
-                            {% if object.ai_insights %}
-                            <p><strong>Performance Insights:</strong></p>
-                            <p style="background-color: #e3f2fd; padding: 10px; border-left: 3px solid #5b9fd4;">{{ object.ai_insights }}</p>
-                            {% endif %}
-                            
-                            <p style="margin-top: 20px;">If you have any questions about your evaluation, please contact your manager or the HR department.</p>
-                            
-                            <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                                This is an automated message. Please do not reply to this email.
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </field>
+        <field name="subject">Performance Evaluation Approved</field>
+        <field name="body_html" type="html">&lt;p&gt;Your evaluation has been approved.&lt;/p&gt;</field>
     </record>
 
-    <!-- Email Template: Training Started -->
     <record id="email_template_training_started" model="mail.template">
         <field name="name">Training Program Started</field>
-        <field name="email_from">{{ (object.env.company.email or object.trainer_id.user_id.email if object.trainer_id else object.env.user.email) }}</field>
-        <field name="email_to">{{ object.employee_id.user_id.email }}</field>
-        <field name="subject">Training Program Started: {{ object.name }}</field>
         <field name="model_id" ref="model_ensa_training"/>
-        <field name="body_html" type="html">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td style="padding: 10px; font-family: 'Lucida Grande', Ubuntu, Arial, sans-serif; font-size: 14px;">
-                            <p>Dear {{ object.employee_id.name }},</p>
-                            <p>Your training program <strong>{{ object.name }}</strong> has officially started!</p>
-                            
-                            <table border="1" cellpadding="10" cellspacing="0" width="100%" style="background-color: #f7f7f7; margin: 20px 0;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Training:</td>
-                                        <td>{{ object.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Category:</td>
-                                        <td>{{ dict(object._fields['category'].selection).get(object.category) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Start Date:</td>
-                                        <td>{{ object.start_date }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">End Date:</td>
-                                        <td>{{ object.end_date }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Duration:</td>
-                                        <td>{{ object.duration }} hours</td>
-                                    </tr>
-                                    {% if object.trainer_id %}
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Trainer:</td>
-                                        <td>{{ object.trainer_id.name }}</td>
-                                    </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                            
-                            {% if object.description %}
-                            <p><strong>Training Description:</strong></p>
-                            <p>{{ object.description }}</p>
-                            {% endif %}
-                            
-                            <p style="margin-top: 20px;">We look forward to your participation in this training program. Please ensure you attend all sessions and complete all assignments.</p>
-                            
-                            <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                                This is an automated message. Please do not reply to this email.
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </field>
+        <field name="subject">Training Program Started</field>
+        <field name="body_html" type="html">&lt;p&gt;Your training has started.&lt;/p&gt;</field>
     </record>
 
-    <!-- Email Template: Training Completed -->
     <record id="email_template_training_completed" model="mail.template">
         <field name="name">Training Program Completed</field>
-        <field name="email_from">{{ (object.env.company.email or object.trainer_id.user_id.email if object.trainer_id else object.env.user.email) }}</field>
-        <field name="email_to">{{ object.employee_id.user_id.email }}</field>
-        <field name="subject">Training Completed: {{ object.name }}</field>
         <field name="model_id" ref="model_ensa_training"/>
-        <field name="body_html" type="html">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td style="padding: 10px; font-family: 'Lucida Grande', Ubuntu, Arial, sans-serif; font-size: 14px;">
-                            <p>Dear {{ object.employee_id.name }},</p>
-                            <p>Congratulations! You have successfully completed the training program <strong>{{ object.name }}</strong>.</p>
-                            
-                            <table border="1" cellpadding="10" cellspacing="0" width="100%" style="background-color: #f7f7f7; margin: 20px 0;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Training:</td>
-                                        <td>{{ object.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Category:</td>
-                                        <td>{{ dict(object._fields['category'].selection).get(object.category) }}</td>
-                                    </tr>
-                                    {% if object.post_training_score %}
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Assessment Score:</td>
-                                        <td>
-                                            {% if object.post_training_score >= 8.0 %}
-                                            <strong style="color: #51a881;">{{ "%.1f" % object.post_training_score }}/10 - Excellent Performance! 🎉</strong>
-                                            {% else %}
-                                            <strong>{{ "%.1f" % object.post_training_score }}/10</strong>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if object.certification %}
-                                    <tr>
-                                        <td style="font-weight: bold; background-color: #e8e8e8;">Certification:</td>
-                                        <td><span style="background-color: #51a881; color: white; padding: 5px 10px; border-radius: 3px;">Certificate Provided</span></td>
-                                    </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                            
-                            {% if object.competency_improvement %}
-                            <p><strong>Competencies Improved:</strong></p>
-                            <p>{{ object.competency_improvement }}</p>
-                            {% endif %}
-                            
-                            <p style="margin-top: 20px;">We are proud of your dedication and commitment to professional development. Your completion of this training enhances your skills and contributes to organizational success.</p>
-                            
-                            <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                                This is an automated message. Please do not reply to this email.
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </field>
+        <field name="subject">Training Completed</field>
+        <field name="body_html" type="html">&lt;p&gt;You have completed the training.&lt;/p&gt;</field>
     </record>
-
 </odoo>
