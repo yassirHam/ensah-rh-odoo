@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class EmployeeTraining(models.Model):
     _name = 'ensa.training'
@@ -32,6 +33,12 @@ class EmployeeTraining(models.Model):
     # Competency mapping
     competency_improvement = fields.Text(string="Competencies Improved")
     post_training_score = fields.Float(string="Post-Training Assessment")
+
+    @api.constrains('start_date', 'end_date')
+    def _check_dates(self):
+        for training in self:
+            if training.start_date and training.end_date and training.end_date < training.start_date:
+                raise ValidationError(_("End date must be after or equal to start date."))
 
     @api.depends('start_date', 'end_date')
     def _compute_duration(self):

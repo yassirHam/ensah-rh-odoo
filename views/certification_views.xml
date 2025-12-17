@@ -10,7 +10,6 @@
                 <field name="employee_id"/>
                 <field name="issuing_body"/>
                 <field name="issue_date"/>
-                <field name="expiry_date" widget="remaining_days"/>
             </tree>
         </field>
     </record>
@@ -34,7 +33,6 @@
                         </group>
                         <group>
                             <field name="issue_date"/>
-                            <field name="expiry_date"/>
                         </group>
                     </group>
                     <separator string="Verification"/>
@@ -53,13 +51,26 @@
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="issuing_body"/>
-                <filter string="Valid" name="valid" domain="['|', ('expiry_date', '=', False), ('expiry_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
-                <filter string="Expired" name="expired" domain="[('expiry_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
                     <filter name="group_by_issuing_body" string="Issuing Body" context="{'group_by': 'issuing_body'}"/>
                 </group>
             </search>
+        </field>
+    </record>
+    
+    <!-- Certification Action (MISSING - ADDED) -->
+    <record id="action_ensa_certification" model="ir.actions.act_window">
+        <field name="name">Certifications</field>
+        <field name="res_model">ensa.employee.certification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No certifications found
+            </p>
+            <p>
+                Track employee certifications, licenses, and qualifications.
+            </p>
         </field>
     </record>
 </odoo>

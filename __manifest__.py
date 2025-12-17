@@ -3,10 +3,12 @@
     'summary': "Advanced HR Management System with Modern Dashboard",
     'description': """
         Enterprise-grade HR solution featuring:
-        - Smart employee profiles with skill matrices
-        - AI-powered performance evaluations
+        - AI Chat Assistant for natural language HR queries
+        - Smart Dashboard with real-time AI insights
+        - AI-powered performance evaluations with recommendations
+        - Turnover risk predictions and anomaly detection
+        - Predictive analytics and data visualization suggestions
         - Equipment lifecycle management
-        - Interactive real-time dashboard
         - Advanced reporting engine
     """,
     'author': "Ensa Hoceima",
@@ -19,12 +21,18 @@
         'hr_attendance',
         'hr_holidays',
         'hr_recruitment',
-        'web'  # CORRECTED: Changed from 'web_dashboard' to 'web'
+        'web'
     ],
+    'external_dependencies': {
+        'python': ['qrcode'],
+    },
+    'images': ['static/description/t1.png'],
+    'web_icon': 'ensa_hoceima_hr,static/description/icon.png',
     'data': [
     'security/security.xml',
     'security/ir.model.access.csv',
     'data/data.xml',
+    'views/base_menu.xml',              # Must be first (defines root menu)
     # 'data/email_templates.xml',  # TEMPORARILY DISABLED: XML schema validation issue
     'views/evaluation_views.xml',
     'views/training_views.xml',
@@ -34,10 +42,14 @@
     'views/internship_views.xml',       # NEW: Internships UI
     'views/certification_views.xml',    # NEW: Certification UI (Must be before analytics)
     'views/analytics_views.xml',        # NEW: Department analytics dashboards
-    'views/dashboard_views.xml',
+    'views/dashboard_views.xml',        # NEW: AI-powered dashboard
+    'views/ai_assistant_views.xml',     # NEW: AI chat assistant
+    'views/settings_views.xml',         # NEW: AI & WhatsApp configuration
     'views/menu.xml',                   # Must come after all view files
-    'report/report_templates.xml',
-    'report/employee_report.xml',
+    'report/ensah_report_base.xml',     # Base templates
+    'report/report_templates.xml',      # Legacy/Detailed templates
+    'report/professional_reports.xml',  # New Professional templates
+    'report/report_actions.xml',        # All Report Actions
     ],
     'assets': {
         'web.assets_common': [

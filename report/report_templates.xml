@@ -1,170 +1,117 @@
 <odoo>
     <!-- Employee Report Template -->
     <template id="report_employee_document">
-        <t t-call="web.html_container">
-            <t t-call="web.internal_layout">
-                <div class="page">
-                    <div class="header mb32">
-                        <div class="row">
-                            <div class="col-6">
-                                <h2 class="text-primary">
-                                    <span>Ensa Hoceima</span>
-                                    <br/>
-                                    <small class="text-muted">HR Department</small>
-                                </h2>
-                            </div>
-                            <div class="col-6 text-right">
-                                <h3>Employee Profile</h3>
-                                <p class="text-muted mt4">
-                                    Generated: <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/>
-                                </p>
-                            </div>
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <div class="header mb32">
+                    <div class="row">
+                        <div class="col-6">
+                            <h2 class="text-primary">
+                                <span>Ensa Hoceima</span>
+                                <br/>
+                                <small class="text-muted">HR Department</small>
+                            </h2>
                         </div>
-                        <div class="employee-banner mt16">
-                            <div class="employee-avatar">
-                                <img t-att-src="image_data_uri(employee.image_1920)" alt="Employee Photo" class="img-fluid rounded-circle border"/>
-                            </div>
-                            <div class="employee-details">
-                                <h1 class="employee-name" t-field="employee.name"/>
-                                <h3 class="employee-job" t-field="employee.job_title"/>
-                                <p class="employee-department" t-field="employee.department_id.name"/>
-                            </div>
+                        <div class="col-6 text-right">
+                            <h3>Employee Profile</h3>
+                            <p class="text-muted mt4">
+                                Generated: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                            </p>
                         </div>
                     </div>
-                    
-                    <div class="body">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="section mb16">
-                                    <h4 class="section-title">Personal Information</h4>
-                                    <div class="info-grid">
-                                        <div class="info-item">
-                                            <span class="info-label">National ID:</span>
-                                            <span class="info-value" t-field="employee.identification_number"/>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Contact:</span>
-                                            <span class="info-value">
-                                                <t t-field="employee.work_phone"/><br/>
-                                                <t t-field="employee.work_email"/>
-                                            </span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Emergency Contact:</span>
-                                            <span class="info-value" t-field="employee.emergency_contact"/>
-                                        </div>
+                    <div class="employee-banner mt16">
+                        <div class="employee-avatar">
+                            <img t-att-src="image_data_uri(employee.image_1920)" alt="Employee Photo" class="img-fluid rounded-circle border"/>
+                        </div>
+                        <div class="employee-details">
+                            <h1 class="employee-name" t-field="employee.name"/>
+                            <h3 class="employee-job" t-field="employee.job_title"/>
+                            <p class="employee-department" t-field="employee.department_id.name"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="section mb16">
+                                <h4 class="section-title">Personal Information</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">National ID:</span>
+                                        <span class="info-value" t-field="employee.identification_number"/>
                                     </div>
-                                </div>
-                                
-                                <div class="section mb16">
-                                    <h4 class="section-title">Contract Details</h4>
-                                    <div class="info-grid">
-                                        <div class="info-item">
-                                            <span class="info-label">Start Date:</span>
-                                            <span class="info-value" t-field="employee.first_contract_date"/>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Contract Type:</span>
-                                            <span class="info-value" t-field="employee.contract_id.contract_type"/>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="info-label">Working Hours:</span>
-                                            <span class="info-value" t-field="employee.resource_calendar_id.name"/>
-                                        </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Contact:</span>
+                                        <span class="info-value">
+                                            <t t-field="employee.work_phone"/><br/>
+                                            <t t-field="employee.work_email"/>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Emergency Contact:</span>
+                                        <span class="info-value" t-field="employee.emergency_contact"/>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="col-6">
-                                <div class="section mb16">
-                                    <h4 class="section-title">Performance Overview</h4>
-                                    <div class="performance-chart">
-                                        <canvas id="performanceChart" height="200"></canvas>
+                            <div class="section mb16">
+                                <h4 class="section-title">Contract Details</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Start Date:</span>
+                                        <span class="info-value" t-field="employee.first_contract_date"/>
                                     </div>
-                                    <div class="performance-summary mt16">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="card border-left-primary shadow py-2">
-                                                    <div class="card-body">
-                                                        <div class="row no-gutters align-items-center">
-                                                            <div class="col mr-2">
-                                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Avg. Score</div>
-                                                                <div class="h5 mb-0 font-weight-bold text-gray-800" t-esc="'%.1f' % employee.avg_evaluation_score"/>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <i class="fas fa-star fa-2x text-gray-300"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="card border-left-success shadow py-2">
-                                                    <div class="card-body">
-                                                        <div class="row no-gutters align-items-center">
-                                                            <div class="col mr-2">
-                                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Last Eval</div>
-                                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                                    <span t-field="employee.last_evaluation_date"/>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Contract Type:</span>
+                                        <span class="info-value" t-field="employee.contract_id.contract_type"/>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Working Hours:</span>
+                                        <span class="info-value" t-field="employee.resource_calendar_id.name"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="row mt16">
-                            <div class="col-12">
-                                <div class="section">
-                                    <h4 class="section-title">Skill Matrix</h4>
-                                    <div class="skill-matrix">
-                                        <div class="skill-category">
-                                            <h5>Technical Skills</h5>
-                                            <div class="skill-list">
-                                                <t t-foreach="employee.technical_skills.splitlines()" t-as="skill">
-                                                    <div class="skill-item">
-                                                        <div class="skill-name" t-esc="skill"/>
-                                                        <div class="skill-level">
-                                                            <span t-esc="get_skill_level(skill)"/>
+                        <div class="col-6">
+                            <div class="section mb16">
+                                <h4 class="section-title">Performance Overview</h4>
+                                <div class="performance-chart">
+                                    <canvas id="performanceChart" height="200"></canvas>
+                                </div>
+                                <div class="performance-summary mt16">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="card border-left-primary shadow py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Avg. Score</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800" t-esc="'%.1f' % employee.avg_evaluation_score"/>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-star fa-2x text-gray-300"></i>
                                                         </div>
                                                     </div>
-                                                </t>
+                                                </div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="skill-category">
-                                            <h5>Soft Skills</h5>
-                                            <div class="skill-list">
-                                                <t t-foreach="employee.soft_skills.splitlines()" t-as="skill">
-                                                    <div class="skill-item">
-                                                        <div class="skill-name" t-esc="skill"/>
-                                                        <div class="skill-level">
-                                                            <span t-esc="get_skill_level(skill)"/>
+                                        <div class="col-6">
+                                            <div class="card border-left-success shadow py-2">
+                                                <div class="card-body">
+                                                    <div class="row no-gutters align-items-center">
+                                                        <div class="col mr-2">
+                                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Last Eval</div>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                                <span t-field="employee.last_evaluation_date"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
                                                         </div>
                                                     </div>
-                                                </t>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="skill-category">
-                                            <h5>Languages</h5>
-                                            <div class="skill-list">
-                                                <t t-foreach="employee.language_skills.splitlines()" t-as="skill">
-                                                    <div class="skill-item">
-                                                        <div class="skill-name" t-esc="skill"/>
-                                                        <div class="skill-level">
-                                                            <span t-esc="get_skill_level(skill)"/>
-                                                        </div>
-                                                    </div>
-                                                </t>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -173,21 +120,72 @@
                         </div>
                     </div>
                     
-                    <div class="footer mt32 pt16 border-top">
-                        <div class="row">
-                            <div class="col-6">
-                                <p class="text-muted">
-                                    This is an official document from Ensa Hoceima HR Department.
-                                </p>
-                            </div>
-                            <div class="col-6 text-right">
-                                <img t-att-src="'/ensa_hoceima_hr/static/description/icon.svg'" 
-                                     alt="Company Logo" style="height: 40px;"/>
+                    <div class="row mt16">
+                        <div class="col-12">
+                            <div class="section">
+                                <h4 class="section-title">Skill Matrix</h4>
+                                <div class="skill-matrix">
+                                    <div class="skill-category">
+                                        <h5>Technical Skills</h5>
+                                        <div class="skill-list">
+                                            <t t-foreach="employee.technical_skills.splitlines()" t-as="skill">
+                                                <div class="skill-item">
+                                                    <div class="skill-name" t-esc="skill"/>
+                                                    <div class="skill-level">
+                                                        <span t-esc="get_skill_level(skill)"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="skill-category">
+                                        <h5>Soft Skills</h5>
+                                        <div class="skill-list">
+                                            <t t-foreach="employee.soft_skills.splitlines()" t-as="skill">
+                                                <div class="skill-item">
+                                                    <div class="skill-name" t-esc="skill"/>
+                                                    <div class="skill-level">
+                                                        <span t-esc="get_skill_level(skill)"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="skill-category">
+                                        <h5>Languages</h5>
+                                        <div class="skill-list">
+                                            <t t-foreach="employee.language_skills.splitlines()" t-as="skill">
+                                                <div class="skill-item">
+                                                    <div class="skill-name" t-esc="skill"/>
+                                                    <div class="skill-level">
+                                                        <span t-esc="get_skill_level(skill)"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </t>
+                
+                <div class="footer mt32 pt16 border-top">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="text-muted">
+                                This is an official document from Ensa Hoceima HR Department.
+                            </p>
+                        </div>
+                        <div class="col-6 text-right">
+                            <img t-att-src="'/ensa_hoceima_hr/static/description/icon.svg'" 
+                                 alt="Company Logo" style="height: 40px;"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </t>
     </template>
     

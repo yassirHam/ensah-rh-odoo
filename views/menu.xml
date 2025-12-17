@@ -1,73 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Root Menu for Ensa Hoceima HR Module -->
-    <menuitem id="menu_ensa_hr_root"
-              name="Ensa Hoceima HR"
-              sequence="100"
-              web_icon="ensa_hoceima_hr,static/description/icon.png"/>
-    
-    <!-- Performance Management Section -->
+    <!-- Performance Menu -->
     <menuitem id="menu_ensa_performance"
               name="Performance"
               parent="menu_ensa_hr_root"
-              sequence="10"/>
+              sequence="20"/>
     
     <menuitem id="menu_ensa_evaluation"
-              name="Evaluations"
+              name="Performance Evaluations"
               parent="menu_ensa_performance"
-              action="ensa_hoceima_hr.action_ensa_evaluation"
-              sequence="1"/>
+              action="action_ensa_evaluation"
+              sequence="10"/>
+    
+    <!-- Training Menu -->
+    <menuitem id="menu_ensa_training_root"
+              name="Training"
+              parent="menu_ensa_hr_root"
+              sequence="30"/>
     
     <menuitem id="menu_ensa_training"
               name="Training Programs"
-              parent="menu_ensa_performance"
-              action="ensa_hoceima_hr.action_ensa_training"
-              sequence="2"/>
+              parent="menu_ensa_training_root"
+              action="action_ensa_training"
+              sequence="10"/>
     
-    <!-- Assets Management Section -->
-    <menuitem id="menu_ensa_assets"
-              name="Assets"
+    <!-- Equipment Menu -->
+    <menuitem id="menu_ensa_equipment_root"
+              name="Equipment"
               parent="menu_ensa_hr_root"
-              sequence="20"/>
+              sequence="40"/>
     
     <menuitem id="menu_ensa_equipment"
-              name="Equipment"
-              parent="menu_ensa_assets"
-              action="ensa_hoceima_hr.action_ensa_equipment"
-              sequence="1"/>
+              name="Equipment Management"
+              parent="menu_ensa_equipment_root"
+              action="action_ensa_equipment"
+              sequence="10"/>
     
-    <!-- Academic Management Section -->
-    <menuitem id="menu_ensa_academic"
-              name="Academic"
+    <!-- Students & Projects Menu -->
+    <menuitem id="menu_ensa_students"
+              name="Students &amp; Projects"
               parent="menu_ensa_hr_root"
-              sequence="15"/>
-    
-    <menuitem id="menu_ensa_student_projects"
-              name="Student Projects"
-              parent="menu_ensa_academic"
-              action="ensa_hoceima_hr.action_ensa_student_project"
-              sequence="1"/>
+              sequence="50"/>
     
     <menuitem id="menu_ensa_internships"
               name="Internships"
-              parent="menu_ensa_academic"
-              action="ensa_hoceima_hr.action_ensa_internship"
-              sequence="2"/>
+              parent="menu_ensa_students"
+              action="action_ensa_internship"
+              sequence="10"/>
     
-    <!-- Employee Management Section -->
-    <menuitem id="menu_ensa_employees"
-              name="Employees"
-              parent="menu_ensa_hr_root"
-              sequence="5"/>
+    <menuitem id="menu_ensa_projects"
+              name="Student Projects"
+              parent="menu_ensa_students"
+              action="action_ensa_student_project"
+              sequence="20"/>
     
-    <menuitem id="menu_ensa_employee_analysis"
-              name="Employee Analysis"
-              parent="menu_ensa_employees"
-              action="ensa_hoceima_hr.action_ensa_employee_analysis"
-              sequence="1"/>
-
-    <!-- Departments Section (ENSA Specialties) -->
-    <menuitem id="menu_ensa_departments"
-              name="Departments"
+    <menuitem id="menu_ensa_certifications"
+              name="Certifications"
+              parent="menu_ensa_students"
+              action="action_ensa_certification"
+              sequence="30"/>
+    
+    <!-- AI &amp; Analytics Menu -->
+    <menuitem id="menu_ensa_ai_analytics"
+              name="AI &amp; Analytics"
               parent="menu_ensa_hr_root"
-              sequence="8"/>
+              sequence="5"
+              groups="hr.group_hr_manager"/>
+    
+    <menuitem id="menu_ensa_dashboard"
+              name="📊 Dashboard"
+              parent="menu_ensa_ai_analytics"
+              action="action_ensa_dashboard"
+              sequence="10"/>
+    
+    <menuitem id="menu_ensa_ai_assistant"
+              name="💬 AI Assistant"
+              parent="menu_ensa_ai_analytics"
+              action="action_ai_assistant_chat"
+              sequence="20"/>
+    
+    <menuitem id="menu_ensa_ai_history"
+              name="Chat History"
+              parent="menu_ensa_ai_analytics"
+              action="action_ai_assistant_history"
+              sequence="30"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_ensa_settings"
+              name="Configuration"
+              parent="menu_ensa_hr_root"
+              sequence="100"
+              groups="base.group_system"/>
 </odoo>

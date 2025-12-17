@@ -1,4 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Dashboard functionality disabled for now -->
-    <!-- Access reports through evaluation, training, and equipment modules -->
+    <!-- Enhanced Dashboard with AI Insights -->
+    <record id="view_ensa_dashboard" model="ir.ui.view">
+        <field name="name">ensa.dashboard.view</field>
+        <field name="model">ensa.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="HR Dashboard" create="false" edit="false" delete="false">
+                <sheet style="background: #f5f7fa;">
+                    <!-- Header -->
+                    <div class="oe_title mb32">
+                        <h1 style="color: #2c3e50;">
+                            <i class="fa fa-dashboard"/> HR Analytics Dashboard
+                        </h1>
+                        <p class="text-muted">Real-time insights powered by AI</p>
+                    </div>
+                    
+                    <!-- AI Insights Banner -->
+                    <div class="row mb32">
+                        <div class="col-12">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 30px; color: white; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h3 style="color: white; margin-bottom: 15px;">
+                                            <i class="fa fa-robot fa-2x" style="vertical-align: middle;"/> AI Insights
+                                        </h3>
+                                        <div id="ai-insights-content" style="font-size: 1.1em; line-height: 1.6;">
+                                            <p><i class="fa fa-spinner fa-spin"/> Loading AI insights...</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        <div class="btn btn-light btn-lg" style="border-radius: 50px; padding: 12px 30px; cursor: pointer;">
+                                            <i class="fa fa-refresh"/> Refresh
+                                        </div>
+                                        <div class="btn btn-outline-light btn-lg mt-2" style="border-radius: 50px; padding: 12px 30px; display: block; width: 100%; cursor: pointer;">
+                                            <i class="fa fa-comments"/> Ask AI
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards Row -->
+                    <div class="row mb32">
+                        <!-- Total Employees Card -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Total Employees
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-employees">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-users fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Avg Performance Card -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Avg Performance
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-performance">0.0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-star fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trainings Card -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Active Trainings
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-trainings">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-graduation-cap fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Evaluations Card -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Evaluations
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-evaluations">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-clipboard fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Turnover Risk & Anomalies Row -->
+                    <div class="row mb32">
+                        <!-- Turnover Risks -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-danger">
+                                        <i class="fa fa-exclamation-triangle"/> Turnover Risk Alerts
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="turnover-risks-content">
+                                        <p class="text-muted">Loading...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Anomalies -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-warning">
+                                        <i class="fa fa-bell"/> Detected Anomalies
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="anomalies-content">
+                                        <p class="text-muted">Loading...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Predictions & Suggestions Row -->
+                    <div class="row">
+                        <!-- Future Predictions -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 bg-primary text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fa fa-line-chart"/> Future Predictions
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="predictions-content">
+                                        <div class="btn btn-primary btn-block" id="load-predictions" style="cursor: pointer;">
+                                            <i class="fa fa-magic"/> Generate Predictions
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Suggestions -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 bg-success text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fa fa-lightbulb-o"/> AI Suggestions
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="suggestions-content">
+                                        <div class="btn btn-success btn-block" id="load-suggestions" style="cursor: pointer;">
+                                            <i class="fa fa-bolt"/> Get Suggestions
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Dashboard Action -->
+    <record id="action_ensa_dashboard" model="ir.actions.act_window">
+        <field name="name">HR Dashboard</field>
+        <field name="res_model">ensa.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ensa_dashboard"/>
+        <field name="target">current</field>
+    </record>
 </odoo>

@@ -1,0 +1,7 @@
+# AI & WhatsApp Dependencies (Zero-Dependency Mode)
+# No external libs required for core logic (requests is built-in)
+# Optional:
+pdfkit>=1.0.0
+qrcode[pil]>=7.4.2
+python-dotenv>=1.0.0
+Pillow>=10.0.0

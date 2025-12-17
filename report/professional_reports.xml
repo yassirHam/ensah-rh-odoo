@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== TRAINING CERTIFICATES ==================== -->
+    
+    <!-- Training Certificate -->
+    <template id="report_training_certificate">
+        <t t-foreach="docs" t-as="training">
+            <t t-call="web.basic_layout">
+                <div class="certificate-page" style="min-height: 29.7cm; padding: 3cm;">
+                    <!-- Certificate Header -->
+                    <div class="text-center" style="margin-bottom: 40px;">
+                        <img src="/ensa_hoceima_hr/static/img/ensah_logo.png" style="max-height: 100px;" alt="ENSAH Logo"/>
+                        <h2 style="color: #1e40af; margin-top: 20px; font-family: 'Georgia', serif;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
+                        <h3 style="color: #2c3e50; font-family: 'Georgia', serif;">École Nationale des Sciences Appliquées</h3>
+                        <h4 style="color: #6c757d; font-style: italic;">Al Hoceima - Maroc</h4>
+                    </div>
+                    
+                    <!-- Certificate Title -->
+                    <div class="text-center" style="margin: 50px 0 30px 0;">
+                        <div style="border-top: 3px double #d97706; border-bottom: 3px double #d97706; padding: 20px; display: inline-block; min-width: 60%">
+                            <h1 style="color: #d97706; font-size: 36pt; margin: 0; font-family: 'Georgia', serif; text-transform: uppercase; letter-spacing: 2px;">
+                                Certificat de Formation
+                            </h1>
+                        </div>
+                    </div>
+                    
+                    <!-- Certificate Body -->
+                    <div style="margin: 40px auto; max-width: 80%; font-size: 14pt; line-height: 1.8;">
+                        <p style="text-align: center; margin-bottom: 30px;">
+                            La Direction de l'École Nationale des Sciences Appliquées d'Al Hoceima<br/>
+                            certifie que
+                        </p>
+                        <p style="text-align: center; font-size: 20pt; font-weight: bold; color: #1e40af; margin: 30px 0;">
+                            <t t-esc="training.employee_id.name"/>
+                        </p>
+                        <p style="text-align: center; margin: 30px 0;">
+                            a suivi avec succès la formation intitulée :
+                        </p>
+                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #2c3e50; margin: 30px 0;">
+                            « <t t-esc="training.name"/> »
+                        </p>
+                        <div class="row" style="margin-top: 40px; text-align: center;">
+                            <div class="col-6">
+                                <strong>Catégorie:</strong> <t t-esc="training.category"/><br/>
+                                <strong>Durée:</strong> <t t-esc="training.duration"/> heures
+                            </div>
+                            <div class="col-6">
+                                <strong>Période:</strong> Du <t t-esc="training.start_date"/> au <t t-esc="training.end_date"/><br/>
+                                <t t-if="training.post_training_score">
+                                    <strong>Note finale:</strong> <t t-esc="'%.1f' % training.post_training_score"/>/10
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Signatures -->
+                    <div class="row" style="margin-top: 80px;">
+                        <div class="col-6 text-center">
+                            <div style="margin-top: 60px; border-top: 2px solid #2c3e50; padding-top: 10px; display: inline-block; min-width: 200px;">
+                                <strong>Le Directeur / المدير</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div style="margin-top: 60px; border-top: 2px solid #2c3e50; padding-top: 10px; display: inline-block; min-width: 200px;">
+                                <strong>Le Responsable des Formations</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="text-center" style="position: absolute; bottom: 2cm; left: 0; right: 0; font-size: 9pt; color: #6c757d;">
+                        Délivré le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/> |
+                        Document officiel vérifié
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <!-- ==================== INTERNSHIP CERTIFICATES ==================== -->
+    
+    <!-- Internship Certificate -->
+    <template id="report_internship_certificate">
+        <t t-foreach="docs" t-as="internship">
+            <t t-call="web.basic_layout">
+                <div class="certificate-page" style="min-height: 29.7cm; padding: 3cm;">
+                    <!-- Header same as training -->
+                    <div class="text-center" style="margin-bottom: 40px;">
+                        <img src="/ensa_hoceima_hr/static/img/ensah_logo.png" style="max-height: 100px;" alt="ENSAH Logo"/>
+                        <h2 style="color: #1e40af; margin-top: 20px;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
+                        <h3 style="color: #2c3e50;">École Nationale des Sciences Appliquées</h3>
+                        <h4 style="color: #6c757d; font-style: italic;">Al Hoceima - Maroc</h4>
+                    </div>
+                    
+                    <div class="text-center" style="margin: 50px 0 30px 0;">
+                        <h1 style="color: #d97706; font-size: 36pt;">Attestation de Stage</h1>
+                    </div>
+                    
+                    <div style="margin: 40px auto; max-width: 80%; font-size: 14pt; line-height: 1.8;">
+                        <p style="text-align: center; margin-bottom: 30px;">
+                            Le Directeur de l'École Nationale des Sciences Appliquées d'Al Hoceima<br/>
+                            atteste que l'étudiant(e)
+                        </p>
+                        <p style="text-align: center; font-size: 20pt; font-weight: bold; color: #1e40af; margin: 30px 0;">
+                            <t t-esc="internship.student_name"/>
+                        </p>
+                        <p style="text-align: center; margin: 30px 0;">
+                            a effectué un stage de <strong><t t-esc="internship.internship_type"/></strong><br/>
+                            au sein de l'entreprise
+                        </p>
+                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #059669; margin: 30px 0;">
+                            <t t-esc="internship.host_company"/>
+                        </p>
+                        <div class="row" style="margin-top: 40px; text-align: center;">
+                            <div class="col-6">
+                                <strong>Durée:</strong> Du <t t-esc="internship.start_date"/> au <t t-esc="internship.end_date"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Encadrant ENSAH:</strong> <t t-esc="internship.supervisor_id.name"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <!-- One-Page Project Summary -->
+    <template id="report_project_summary">
+        <t t-call="ensa_hoceima_hr.ensah_report_layout">
+            <div class="page">
+                <h2 class="text-center" style="color: #1e40af; margin-bottom: 30px; border-bottom: 3px solid #d97706; padding-bottom: 10px;">
+                    FICHE DE PROJET / PROJECT SUMMARY
+                </h2>
+                
+                <!-- Project Header Card -->
+                <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
+                    <h3 style="color: white; margin: 0 0 10px 0;"><t t-esc="project.title"/></h3>
+                    <p style="margin: 0; font-size: 12pt; opacity: 0.9;"><t t-esc="project.name"/></p>
+                </div>
+                
+                <!-- Project Details Grid -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-6">
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td style="width: 40%;"><strong>Domaine:</strong></td>
+                                <td><t t-esc="project.domain"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Encadrant:</strong></td>
+                                <td><t t-esc="project.supervisor_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Période:</strong></td>
+                                <td><t t-esc="project.start_date"/> → <t t-esc="project.end_date"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td style="width: 40%;"><strong>Statut:</strong></td>
+                                <td><span class="badge" t-att-class="'badge-success' if project.status == 'completed' else 'badge-warning'"><t t-esc="project.status"/></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Budget:</strong></td>
+                                <td><t t-esc="project.budget"/> MAD</td>
+                            </tr>
+                            <tr t-if="project.final_grade">
+                                <td><strong>Note finale:</strong></td>
+                                <td style="font-size: 16pt; font-weight: bold; color: #059669;"><t t-esc="'%.1f' % project.final_grade"/>/20</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div style="background: #f3f4f6; padding: 20px; border-left: 4px solid #1e40af; margin-bottom: 20px;">
+                    <h4 style="color: #1e40af; margin-top: 0;">Description du projet</h4>
+                    <p t-field="project.description" style="margin: 0;"/>
+                </div>
+                
+                <!-- Technology Stack -->
+                <t t-if="project.technology_stack">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #059669;">Technologies utilisées</h4>
+                        <p t-field="project.technology_stack"/>
+                    </div>
+                </t>
+                
+                <!-- Deliverables -->
+                <t t-if="project.deliverables">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #d97706;">Livrables</h4>
+                        <p t-field="project.deliverables"/>
+                    </div>
+                </t>
+                
+                <!-- Outcomes Highlight -->
+                <t t-if="project.outcomes">
+                    <div style="background: #ecfdf5; border: 2px solid #059669; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #059669; margin-top: 0;">✓ Résultats &amp; Impact</h4>
+                        <p t-field="project.outcomes" style="margin: 0;"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+    
+    <!-- ==================== EVALUATION ENHANCED REPORT ==================== -->
+    
+    <!-- Professional Evaluation Report -->
+    <template id="report_evaluation_professional">
+        <t t-call="ensa_hoceima_hr.ensah_report_layout">
+            <t t-foreach="docs" t-as="evaluation">
+                <div class="page">
+                <h2 class="text-center" style="color: #1e40af; margin-bottom: 30px;">
+                    RAPPORT D'ÉVALUATION / PERFORMANCE REPORT
+                </h2>
+                
+                <!--Employee Header -->
+                <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3 style="color: white; margin: 0;"><t t-esc="evaluation.employee_id.name"/></h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.9;">
+                                <t t-esc="evaluation.employee_id.job_title"/> - <t t-esc="evaluation.employee_id.department_id.name"/>
+                            </p>
+                        </div>
+                        <div class="col-4 text-right">
+                            <div style="background: white; color: #1e40af; padding: 15px; border-radius: 8px; display: inline-block;">
+                                <div style="font-size: 10pt;">Score Global</div>
+                                <div style="font-size: 28pt; font-weight: bold; line-height: 1;"><t t-esc="'%.1f' % evaluation.overall_score"/></div>
+                                <div style="font-size: 10pt;">/10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Evaluation Details -->
+                <div class="row" style="margin-bottom: 30px;">
+                    <div class="col-6">
+                        <p><strong>Date d'évaluation:</strong> <t t-esc="evaluation.date"/></p>
+                        <p><strong>Évaluateur:</strong> <t t-esc="evaluation.evaluator_id.name"/></p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Statut:</strong> <span class="badge badge-info"><t t-esc="evaluation.state"/></span></p>
+                        <p><strong>Recommandation:</strong> <span class="badge badge-success"><t t-esc="evaluation.recommendation"/></span></p>
+                    </div>
+                </div>
+                
+                <!-- Performance Scores Table -->
+                <h4 style="color: #1e40af; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">Détails des Compétences</h4>
+                <table class="table table-bordered" style="margin-bottom: 30px;">
+                    <thead style="background: #f3f4f6;">
+                        <tr>
+                            <th style="width: 50%;">Critère</th>
+                            <th style="width: 25%; text-align: center;">Note</th>
+                            <th style="width: 25%; text-align: center;">Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Compétences Techniques</td>
+                            <td style="text-align: center; font-weight: bold;"><t t-esc="'%.1f' % evaluation.technical_score"/>/10</td>
+                            <td style="text-align: center;">
+                                <t t-set="score_pct" t-value="(evaluation.technical_score / 10.0) * 100"/>
+                                <div style="background: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div t-attf-style="width: {{score_pct}}%; background: #059669; height: 100%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Productivité</td>
+                            <td style="text-align: center; font-weight: bold;"><t t-esc="'%.1f' % evaluation.productivity_score"/>/10</td>
+                            <td style="text-align: center;">
+                                <t t-set="score_pct" t-value="(evaluation.productivity_score / 10.0) * 100"/>
+                                <div style="background: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div t-attf-style="width: {{score_pct}}%; background: #3b82f6; height: 100%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Travail d'équipe</td>
+                            <td style="text-align: center; font-weight: bold;"><t t-esc="'%.1f' % evaluation.teamwork_score"/>/10</td>
+                            <td style="text-align: center;">
+                                <t t-set="score_pct" t-value="(evaluation.teamwork_score / 10.0) * 100"/>
+                                <div style="background: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div t-attf-style="width: {{score_pct}}%; background: #8b5cf6; height: 100%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Innovation &amp; Créativité</td>
+                            <td style="text-align: center; font-weight: bold;"><t t-esc="'%.1f' % evaluation.innovation_score"/>/10</td>
+                            <td style="text-align: center;">
+                                <t t-set="score_pct" t-value="(evaluation.innovation_score / 10.0) * 100"/>
+                                <div style="background: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div t-attf-style="width: {{score_pct}}%; background: #d97706; height: 100%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Assiduité &amp; Ponctualité</td>
+                            <td style="text-align: center; font-weight: bold;"><t t-esc="'%.1f' % evaluation.attendance_score"/>/10</td>
+                            <td style="text-align: center;">
+                                <t t-set="score_pct" t-value="(evaluation.attendance_score / 10.0) * 100"/>
+                                <div style="background: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div t-attf-style="width: {{score_pct}}%; background: #ec4899; height: 100%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Comments and AI Insights -->
+                <div class="row">
+                    <t t-if="evaluation.comments">
+                        <div class="col-12" style="margin-bottom: 20px;">
+                            <h4 style="color: #059669;">Commentaires de l'évaluateur</h4>
+                            <div style="background: #f3f4f6; padding: 15px; border-left: 4px solid #059669; border-radius: 4px;">
+                                <p t-field="evaluation.comments" style="margin: 0;"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-if="evaluation.ai_insights">
+                        <div class="col-12" style="margin-bottom: 20px;">
+                            <h4 style="color: #6366f1;">🤖 Analyse IA</h4>
+                            <div style="background: #eef2ff; padding: 15px; border-left: 4px solid #6366f1; border-radius: 4px;">
+                                <t t-out="evaluation.ai_insights"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <t t-if="evaluation.improvement_plan">
+                        <div class="col-12">
+                            <h4 style="color: #d97706;">Plan d'amélioration</h4>
+                            <div style="background: #fffbeb; padding: 15px; border-left: 4px solid #d97706; border-radius: 4px;">
+                                <p t-field="evaluation.improvement_plan" style="margin: 0;"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Approval Section -->
+                <t t-if="evaluation.approval_manager_id">
+                    <div style="margin-top: 40px; padding: 20px; background: #ecfdf5; border-radius: 8px;">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Approuvé par:</strong> <t t-esc="evaluation.approval_manager_id.name"/>
+                            </div>
+                            <div class="col-6 text-right">
+                                <strong>Date d'approbation:</strong> <t t-esc="evaluation.approval_date"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+            </t>
+        </t>
+    </template>
+</odoo>

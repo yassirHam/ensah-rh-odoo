@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- AI Assistant Form View (Chat Interface) -->
+    <record id="view_ai_assistant_form" model="ir.ui.view">
+        <field name="name">ensa.ai.assistant.form</field>
+        <field name="model">ensa.ai.assistant</field>
+        <field name="arch" type="xml">
+            <form string="AI Chat Assistant" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="question" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="create_date"/>
+                        </group>
+                        <group>
+                            <field name="response_time" widget="float_time"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Answer">
+                            <field name="answer" widget="html" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- AI Assistant Tree View (History) -->
+    <record id="view_ai_assistant_tree" model="ir.ui.view">
+        <field name="name">ensa.ai.assistant.tree</field>
+        <field name="model">ensa.ai.assistant</field>
+        <field name="arch" type="xml">
+            <tree string="Chat History" create="false" edit="false">
+                <field name="create_date"/>
+                <field name="question"/>
+                <field name="user_id"/>
+                <field name="response_time" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- AI Chat Widget (Simplified - No JS) -->
+    <record id="view_ai_chat_widget" model="ir.ui.view">
+        <field name="name">ai.chat.widget</field>
+        <field name="model">ensa.ai.assistant</field>
+        <field name="arch" type="xml">
+            <form string="AI Assistant" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-robot"/> AI Assistant
+                        </h1>
+                        <p class="text-muted">Ask questions about your HR data using natural language</p>
+                    </div>
+                    
+                    <group>
+                        <group string="Example Questions">
+                            <p>• What is our average employee performance?</p>
+                            <p>• Which departments need more training?</p>
+                            <p>• Who are the employees at risk of leaving?</p>
+                            <p>• Show me performance trends</p>
+                        </group>
+                        <group string="How to Use">
+                            <p>1. Create a new chat record</p>
+                            <p>2. Enter your question</p>
+                            <p>3. AI will analyze your HR data</p>
+                            <p>4. View the answer and insights</p>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info mt16">
+                        <p>
+                            <strong><i class="fa fa-lightbulb-o"/> Tip:</strong>
+                            Use the "Chat History" menu to view all previous conversations.
+                        </p>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Actions -->
+    <record id="action_ai_assistant_chat" model="ir.actions.act_window">
+        <field name="name">AI Assistant</field>
+        <field name="res_model">ensa.ai.assistant</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ai_chat_widget"/>
+        <field name="target">current</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                AI Assistant Ready
+            </p>
+            <p>
+                Ask questions about your HR data and get intelligent insights powered by AI.
+            </p>
+        </field>
+    </record>
+    
+    <record id="action_ai_assistant_history" model="ir.actions.act_window">
+        <field name="name">Chat History</field>
+        <field name="res_model">ensa.ai.assistant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'search_default_user_id': uid}</field>
+    </record>
+</odoo>

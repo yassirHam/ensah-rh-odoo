@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== REPORT ACTIONS ==================== -->
+    
+    <!-- Training Certificate Action -->
+    <record id="action_report_training_certificate" model="ir.actions.report">
+        <field name="name">Training Certificate</field>
+        <field name="model">ensa.training</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_training_certificate</field>
+        <field name="report_file">ensa_hoceima_hr.report_training_certificate</field>
+        <field name="print_report_name">'Certificate - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_ensa_training"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Internship Certificate Action -->
+    <record id="action_report_internship_certificate" model="ir.actions.report">
+        <field name="name">Internship Certificate</field>
+        <field name="model">ensa.internship</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_internship_certificate</field>
+        <field name="report_file">ensa_hoceima_hr.report_internship_certificate</field>
+        <field name="print_report_name">'Attestation - %s' % (object.student_name)</field>
+        <field name="binding_model_id" ref="model_ensa_internship"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Project Summary Action -->
+    <record id="action_report_project_summary" model="ir.actions.report">
+        <field name="name">Project Summary</field>
+        <field name="model">ensa.student.project</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_project_summary</field>
+        <field name="report_file">ensa_hoceima_hr.report_project_summary</field>
+        <field name="print_report_name">'Project - %s' % (object.title)</field>
+        <field name="binding_model_id" ref="model_ensa_student_project"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Professional Evaluation Report Action -->
+    <record id="action_report_evaluation_professional" model="ir.actions.report">
+        <field name="name">Professional Evaluation Report</field>
+        <field name="model">ensa.evaluation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_evaluation_professional</field>
+        <field name="report_file">ensa_hoceima_hr.report_evaluation_professional</field>
+        <field name="print_report_name">'Evaluation - %s - %s' % (object.employee_id.name, object.date)</field>
+        <field name="binding_model_id" ref="model_ensa_evaluation"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Training Report (Detailed) Action -->
+    <record id="action_report_training_detailed" model="ir.actions.report">
+        <field name="name">Training Report (Detailed)</field>
+        <field name="model">ensa.training</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_training_pdf</field>
+        <field name="report_file">ensa_hoceima_hr.report_training_pdf</field>
+        <field name="print_report_name">'Training Report - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_ensa_training"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Internship Report (Detailed) Action -->
+    <record id="action_report_internship_detailed" model="ir.actions.report">
+        <field name="name">Internship Report (Detailed)</field>
+        <field name="model">ensa.internship</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_internship_pdf</field>
+        <field name="report_file">ensa_hoceima_hr.report_internship_pdf</field>
+        <field name="print_report_name">'Internship Report - %s' % (object.student_name)</field>
+        <field name="binding_model_id" ref="model_ensa_internship"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Project Report (Detailed) Action -->
+    <record id="action_report_project_detailed" model="ir.actions.report">
+        <field name="name">Project Report (Detailed)</field>
+        <field name="model">ensa.student.project</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_student_project_pdf</field>
+        <field name="report_file">ensa_hoceima_hr.report_student_project_pdf</field>
+        <field name="print_report_name">'Project Report - %s' % (object.title)</field>
+        <field name="binding_model_id" ref="model_ensa_student_project"/>
+        <field name="binding_type">report</field>
+    </record>
+    <!-- Employee Profile Action -->
+    <record id="action_report_employee_profile" model="ir.actions.report">
+        <field name="name">Employee Profile</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ensa_hoceima_hr.report_employee</field>
+        <field name="report_file">ensa_hoceima_hr.report_employee</field>
+        <field name="print_report_name">'Employee_Profile - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

@@ -71,7 +71,6 @@
                                     <field name="name"/>
                                     <field name="issuing_body"/>
                                     <field name="issue_date"/>
-                                    <field name="expiry_date" widget="remaining_days"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -81,7 +80,6 @@
                                             <field name="issue_date"/>
                                         </group>
                                         <group>
-                                            <field name="expiry_date"/>
                                             <field name="employee_id" invisible="1"/>
                                         </group>
                                     </group>
@@ -115,38 +113,198 @@
         </field>
     </record>
     
-    <!-- Employee Analysis View -->
-    <record id="view_employee_analysis_pivot" model="ir.ui.view">
-        <field name="name">hr.employee.analysis.pivot</field>
+    <!-- Employee Analysis View (Simplified Dashboard Style) -->
+    <record id="view_employee_analysis_form" model="ir.ui.view">
+        <field name="name">hr.employee.analysis.simplified</field>
         <field name="model">hr.employee</field>
-        <field name="type">pivot</field>
         <field name="arch" type="xml">
-            <pivot string="Employee Analysis">
-                <field name="department_id" type="col"/>
-                <field name="skill_level" type="row"/>
-            </pivot>
-        </field>
-    </record>
-    
-    <record id="view_employee_analysis_graph" model="ir.ui.view">
-        <field name="name">hr.employee.analysis.graph</field>
-        <field name="model">hr.employee</field>
-        <field name="type">graph</field>
-        <field name="arch" type="xml">
-            <graph string="Skill Distribution" type="bar">
-                <field name="skill_level"/>
-            </graph>
+            <form string="Employee Analysis" create="false" edit="false" delete="false">
+                <sheet style="background: #f5f7fa;">
+                    <!-- Header -->
+                    <div class="oe_title mb32">
+                        <h1 style="color: #2c3e50;">
+                            <i class="fa fa-users"/> Employee Analysis
+                        </h1>
+                        <p class="text-muted">Workforce insights and statistics</p>
+                    </div>
+                    
+                    <!-- Quick Stats Cards -->
+                    <div class="row mb32">
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Total Employees
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-emp">
+                                                <field name="id" invisible="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-users fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Departments
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="dept-count">
+                                                -
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-sitemap fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Expert Level
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="expert-count">
+                                                -
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-star fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Avg Tenure
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-tenure">
+                                                - years
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fa fa-calendar fa-2x text-gray-300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Simple Filters -->
+                    <div class="row mb16">
+                        <div class="col-12">
+                            <div class="alert alert-light" style="background: white; border-radius: 8px; padding: 15px;">
+                                <h5 style="margin-bottom: 15px;">
+                                    <i class="fa fa-filter"/> Quick Filters
+                                </h5>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <span class="badge rounded-pill text-bg-primary p-2 m-1">All Employees</span>
+                                    <span class="badge rounded-pill text-bg-success p-2 m-1">Expert Level</span>
+                                    <span class="badge rounded-pill text-bg-info p-2 m-1">Senior Level</span>
+                                    <span class="badge rounded-pill text-bg-warning p-2 m-1">Entry Level</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content Sections -->
+                    <div class="row">
+                        <!-- Department Breakdown -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 bg-primary text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fa fa-building"/> By Department
+                                    </h6>
+                                </div>
+                                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                    <p class="text-muted">
+                                        Department distribution will be loaded here.
+                                        Use the tree view below for detailed breakdown.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Skill Level Distribution -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow h-100">
+                                <div class="card-header py-3 bg-success text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fa fa-star"/> By Skill Level
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fa fa-star text-warning"/> Expert</span>
+                                            <span class="badge badge-primary badge-pill">-</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fa fa-star-half-o text-info"/> Senior</span>
+                                            <span class="badge badge-primary badge-pill">-</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fa fa-star-o text-secondary"/> Intermediate</span>
+                                            <span class="badge badge-primary badge-pill">-</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fa fa-circle-o text-muted"/> Entry</span>
+                                            <span class="badge badge-primary badge-pill">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mt16">
+                        <div class="col-12 text-center">
+                            <p class="text-muted">
+                                <i class="fa fa-info-circle"/> Switch to Tree or Kanban view for detailed employee list
+                            </p>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
         </field>
     </record>
     
     <record id="action_ensa_employee_analysis" model="ir.actions.act_window">
         <field name="name">Employee Analysis</field>
         <field name="res_model">hr.employee</field>
-        <field name="view_mode">pivot,graph</field>
-        <field name="view_id" ref="view_employee_analysis_pivot"/>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_id" ref="view_employee_analysis_form"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="context">{'search_default_group_by_department': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Analyze your workforce distribution by department and skill level.
+                No employees found
+            </p>
+            <p>
+                View your workforce statistics and distribution by department and skill level.
             </p>
         </field>
     </record>

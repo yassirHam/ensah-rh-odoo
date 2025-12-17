@@ -1,0 +1,7 @@
+<odoo>
+    <!-- Root Menu for Ensa Hoceima HR Module -->
+    <menuitem id="menu_ensa_hr_root"
+              name="Ensa Hoceima HR"
+              sequence="100"
+              web_icon="ensa_hoceima_hr,static/description/icon.png"/>
+</odoo>

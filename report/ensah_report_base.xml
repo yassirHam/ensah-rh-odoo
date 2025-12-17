@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Professional ENSAH Base Report Template -->
+    <template id="ensah_report_layout" name="ENSAH Report Layout">
+        <t t-call="web.basic_layout">
+            <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <!-- Professional Header -->
+                <div class="ensah-header" style="border-bottom: 3px solid #1e40af; padding-bottom: 20px; margin-bottom: 30px;">
+                    <div class="row">
+                        <div class="col-3">
+                            <img src="/ensa_hoceima_hr/static/description/t1.png" style="max-height: 80px;" alt="ENSAH Logo"/>
+                        </div>
+                        <div class="col-6 text-center">
+                            <h3 style="color: #1e40af; margin: 0; font-weight: bold;">المدرسة الوطنية للعلوم التطبيقية</h3>
+                            <h4 style="color: #2c3e50; margin: 5px 0;">École Nationale des Sciences Appliquées</h4>
+                            <p style="color: #6c757d; margin: 0; font-size: 12pt;">Al Hoceima</p>
+                        </div>
+                        <div class="col-3 text-right">
+                            <p style="color: #6c757d; font-size: 10pt; margin: 0;">
+                                <strong>Date:</strong><br/>
+                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Report Content -->
+                <t t-out="0"/>
+                
+                <!-- Professional Footer -->
+                <div class="ensah-footer" style="border-top: 2px solid #e5e7eb; margin-top: 40px; padding-top: 15px;">
+                    <div class="row">
+                        <div class="col-8">
+                            <p style="font-size: 9pt; color: #6c757d; margin: 0;">
+                                <strong>ENSAH - École Nationale des Sciences Appliquées d'Al Hoceima</strong><br/>
+                                Route de Tétouan, B.P 03 Ajdir - Al Hoceima, Maroc<br/>
+                                Tél: +212 539 800 601 | Email: contact@ensah.ma
+                            </p>
+                        </div>
+                        <div class="col-4 text-right">
+                            <!-- QR Code for verification (optional) -->
+                            <t t-if="o and hasattr(o, 'id')">
+                                <img t-attf-src="/report/barcode/?type=QR&amp;value=ENSAH-{{o._name}}-{{o.id}}&amp;width=80&amp;height=80" 
+                                     style="max-height: 60px;" alt="QR Code"/>
+                            </t>
+                            <p style="font-size: 8pt; color: #9ca3af; margin-top: 5px;">
+                                Page <span class="page"/> of <span class="topage"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Professional Certificate Base Template -->
+    <template id="ensah_certificate_base" name="ENSAH Certificate Base">
+        <t t-call="web.basic_layout">
+            <div class="certificate-page" style="background-image: url('/ensa_hoceima_hr/static/img/certificate_border.png'); background-repeat: no-repeat; background-size: 100% 100%; min-height: 29.7cm; padding: 3cm;">
+                <!-- Certificate Header -->
+                <div class="text-center" style="margin-bottom: 40px;">
+                    <img src="/ensa_hoceima_hr/static/description/t1.png" style="max-height: 100px;" alt="ENSAH Logo"/>
+                    <h2 style="color: #1e40af; margin-top: 20px; font-family: 'Georgia', serif;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
+                    <h3 style="color: #2c3e50; font-family: 'Georgia', serif;">École Nationale des Sciences Appliquées</h3>
+                    <h4 style="color: #6c757d; font-style: italic;">Al Hoceima - Maroc</h4>
+                </div>
+                
+                <!-- Certificate Title -->
+                <div class="text-center" style="margin: 50px 0 30px 0;">
+                    <div style="border-top: 3px double #d97706; border-bottom: 3px double #d97706; padding: 20px; display: inline-block; min-width: 60%">
+                        <h1 style="color: #d97706; font-size: 36pt; margin: 0; font-family: 'Georgia', serif; text-transform: uppercase; letter-spacing: 2px;">
+                            <t t-out="0"/>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Certificate Body -->
+                <div style="margin: 40px auto; max-width: 80%; font-size: 14pt; line-height: 1.8; text-align: justify;">
+                    <t t-out="1"/>
+                </div>
+                
+                <!-- Signatures -->
+                <div class="row" style="margin-top: 80px;">
+                    <div class="col-6 text-center">
+                        <div style="margin-top: 60px; border-top: 2px solid #2c3e50; padding-top: 10px; display: inline-block; min-width: 200px;">
+                            <strong>Le Directeur / المدير</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div style="margin-top: 60px; border-top: 2px solid #2c3e50; padding-top: 10px; display: inline-block; min-width: 200px;">
+                            <strong><t t-out="2"/></strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="text-center" style="position: absolute; bottom: 2cm; left: 0; right: 0; font-size: 9pt; color: #6c757d;">
+                    Délivré le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/> |
+                    Document officiel vérifié
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
