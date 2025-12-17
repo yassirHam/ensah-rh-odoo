@@ -4,12 +4,40 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class HRDashboard(models.Model):
+class HRDashboard(models.TransientModel):
     _name = 'ensa.dashboard'
     _description = 'HR Dashboard Data'
-    _auto = False  # This model won't create a database table
 
-    name = fields.Char()  # Dummy field for ORM compatibility
+    name = fields.Char(default="HR Analytics Dashboard")
+    
+    # KPIs
+    total_employees = fields.Integer(string="Total Employees", readonly=True)
+    avg_performance = fields.Float(string="Avg Performance", digits=(16, 1), readonly=True)
+    active_trainings = fields.Integer(string="Active Trainings", readonly=True)
+    total_evaluations = fields.Integer(string="Evaluations", readonly=True)
+    
+    # HTML Content Fields
+    ai_insights_html = fields.Html(string="AI Insights", readonly=True, default="<p>Click Refresh to load AI insights...</p>")
+    turnover_risks_html = fields.Html(string="Turnover Risks", readonly=True)
+    anomalies_html = fields.Html(string="Anomalies", readonly=True)
+    predictions_html = fields.Html(string="Predictions", readonly=True)
+    suggestions_html = fields.Html(string="Suggestions", readonly=True)
+    
+    @api.model
+    def action_open_dashboard(self):
+        """Server action to open dashboard, creating a record if needed"""
+        # Create a fresh record for the user
+        dashboard = self.create({'name': 'HR Dashboard'})
+        
+        return {
+            'name': 'HR Dashboard',
+            'res_model': 'ensa.dashboard',
+            'res_id': dashboard.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref('ensa_hoceima_hr.view_ensa_dashboard').id,
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+        }
     
     @api.model
     def get_dashboard_data(self):
@@ -32,14 +60,91 @@ class HRDashboard(models.Model):
             return dashboard_data
         except Exception as e:
             _logger.error(f"Dashboard data error: {str(e)}")
-            return {
-                'error': str(e),
-                'employee_stats': {'total': 0, 'by_department': {}, 'by_skill_level': {}, 'avg_tenure': 0},
-                'evaluation_stats': {'total': 0, 'avg_score': 0, 'distribution': {}},
-                'equipment_stats': {'total': 0, 'by_status': {}},
-                'training_stats': {'total': 0, 'by_category': {}, 'avg_score': 0, 'upcoming': 0},
-                'department_distribution': []
-            }
+            return {}
+
+    def action_refresh(self):
+        """Action to refresh dashboard data"""
+        data = self.get_dashboard_data()
+        
+        # Format HTML for lists
+        turnover_html = self._format_turnover_list(data.get('turnover_risks', []))
+        anomalies_html = self._format_anomalies_list(data.get('anomalies', []))
+        
+        self.write({
+            'total_employees': data.get('employee_stats', {}).get('total', 0),
+            'avg_performance': data.get('evaluation_stats', {}).get('avg_score', 0),
+            'active_trainings': data.get('training_stats', {}).get('upcoming', 0),
+            'total_evaluations': data.get('evaluation_stats', {}).get('total', 0),
+            'ai_insights_html': data.get('ai_insights', ''),
+            'turnover_risks_html': turnover_html,
+            'anomalies_html': anomalies_html
+        })
+        
+        # Keep the wizard open
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'ensa.dashboard',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def _format_turnover_list(self, risks):
+        if not risks:
+            return "<p class='text-muted'>No high-risk employees detected.</p>"
+        
+        html = "<ul class='list-group list-group-flush'>"
+        for risk in risks:
+            html += f"""
+            <li class='list-group-item d-flex justify-content-between align-items-center'>
+                <div>
+                    <span class='font-weight-bold'>{risk['employee_name']}</span>
+                    <br/><small class='text-muted'>{risk['mitigation'][:50]}...</small>
+                </div>
+                <span class='badge badge-danger badge-pill'>{risk['risk_score']}%</span>
+            </li>"""
+        html += "</ul>"
+        return html
+
+    def _format_anomalies_list(self, anomalies):
+        if not anomalies:
+            return "<p class='text-muted'>No anomalies detected.</p>"
+            
+        html = "<div class='list-group'>"
+        for item in anomalies:
+            html += f"""
+            <div class='list-group-item list-group-item-action flex-column align-items-start'>
+                <div class='d-flex w-100 justify-content-between'>
+                    <h6 class='mb-1 text-warning'><i class='fa fa-exclamation-circle'/> {item['title']}</h6>
+                </div>
+                <p class='mb-1 small'>{item['description']}</p>
+            </div>"""
+        html += "</div>"
+        return html
+    
+    def action_generate_predictions(self):
+        """Generate specific predictions"""
+        try:
+            ai_service = self.env['ensa.ai.service'].get_ai_service()
+            prompt = "Analyze HR trends for the next quarter based on current performance and training data."
+            prediction = ai_service.generate_text(prompt, max_tokens=300)
+            formatted = f"<div class='alert alert-primary'>{prediction}</div>"
+            self.write({'predictions_html': formatted})
+        except Exception as e:
+             self.write({'predictions_html': f"<div class='alert alert-danger'>Error: {str(e)}</div>"})
+        return self.action_refresh()
+
+    def action_get_suggestions(self):
+        """Get AI suggestions"""
+        try:
+            ai_service = self.env['ensa.ai.service'].get_ai_service()
+            prompt = "Suggest 3 HR improvements based on current metrics."
+            suggestion = ai_service.generate_text(prompt, max_tokens=300)
+            formatted = f"<div class='alert alert-success'>{suggestion}</div>"
+            self.write({'suggestions_html': formatted})
+        except Exception as e:
+             self.write({'suggestions_html': f"<div class='alert alert-danger'>Error: {str(e)}</div>"})
+        return self.action_refresh()
     
     def _get_employee_stats(self):
         employees = self.env['hr.employee'].search([('active', '=', True)])
@@ -89,7 +194,13 @@ class HRDashboard(models.Model):
         results = {}
         for record in records:
             field_value = getattr(record, field_name)
-            key = field_value.name if field_value else 'Undefined'
+            # Handle both Many2one (has .name) and Selection (is string) fields
+            if hasattr(field_value, 'name'):
+                key = field_value.name
+            elif field_value:
+                key = str(field_value)
+            else:
+                key = 'Undefined'
             results[key] = results.get(key, 0) + 1
         return results
     
@@ -167,8 +278,8 @@ Average Performance Score: {dashboard_data.get('evaluation_stats', {}).get('avg_
 Departments: {list(dashboard_data.get('employee_stats', {}).get('by_department', {}).keys())}
 Upcoming Trainings: {dashboard_data.get('training_stats', {}).get('upcoming', 0)}
 
-Provide 3 actionable insights in HTML format with icons (use emojis).
-Format each insight as: <div class="insight"><strong>📊 Title</strong>: Description</div>"""
+Provide 3 actionable insights in HTML format.
+Format each insight as: <div class="insight"><strong>Title</strong>: Description</div>"""
             
             insights_html = ai_service.generate_text(prompt, max_tokens=400, temperature=0.6)
             return insights_html

@@ -222,7 +222,7 @@ class EmployeeEvaluation(models.Model):
                 # Format insights as HTML
                 insights_html = f"""
                 <div style="font-family: Arial, sans-serif;">
-                    <h4 style="color: #2c3e50;">🤖 AI Performance Analysis</h4>
+                    <h4 style="color: #2c3e50;">AI Performance Analysis</h4>
                     <p><strong>Summary:</strong> {analysis.get('summary', 'No summary available')}</p>
                     
                     <h5 style="color: #27ae60;">✅ Key Strengths:</h5>

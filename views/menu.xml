@@ -68,9 +68,9 @@
               groups="hr.group_hr_manager"/>
     
     <menuitem id="menu_ensa_dashboard"
-              name="📊 Dashboard"
+              name="Dashboard"
               parent="menu_ensa_ai_analytics"
-              action="action_ensa_dashboard"
+              action="action_ensa_dashboard_server"
               sequence="10"/>
     
     <menuitem id="menu_ensa_ai_assistant"

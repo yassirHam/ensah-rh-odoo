@@ -5,7 +5,7 @@ echo.
 echo Running Odoo Upgrade in shell mode to capture errors...
 echo This might take a minute.
 echo.
-"C:\Program Files\Odoo 17.0.20251024\python\python.exe" "C:\Program Files\Odoo 17.0.20251024\server\odoo-bin" -c "C:\Program Files\Odoo 17.0.20251024\server\odoo.conf" -d odoo_tut -u ensa_hoceima_hr --stop-after-init --log-level=error > debug_log.txt 2>&1
+"C:\Program Files\Odoo 17.0.20251024\python\python.exe" "C:\Program Files\Odoo 17.0.20251024\server\odoo-bin" -c "C:\Program Files\Odoo 17.0.20251024\server\odoo.conf" -d odoo_tut -u ensa_hoceima_hr --stop-after-init --logfile=debug_log.txt --log-level=error
 echo.
 echo Upgrade attempt finished.
 echo If successful, you will see minimal output.

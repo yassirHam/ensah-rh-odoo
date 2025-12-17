@@ -5,7 +5,7 @@
         <field name="name">ensa.ai.assistant.form</field>
         <field name="model">ensa.ai.assistant</field>
         <field name="arch" type="xml">
-            <form string="AI Chat Assistant" create="false" edit="false">
+            <form string="AI Chat Assistant">
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -38,7 +38,7 @@
         <field name="name">ensa.ai.assistant.tree</field>
         <field name="model">ensa.ai.assistant</field>
         <field name="arch" type="xml">
-            <tree string="Chat History" create="false" edit="false">
+            <tree string="Chat History">
                 <field name="create_date"/>
                 <field name="question"/>
                 <field name="user_id"/>
@@ -52,35 +52,36 @@
         <field name="name">ai.chat.widget</field>
         <field name="model">ensa.ai.assistant</field>
         <field name="arch" type="xml">
-            <form string="AI Assistant" create="false" edit="false">
+            <form string="AI Assistant">
+                <header>
+                    <button name="action_submit_query" string="Ask AI" type="object" class="btn-primary"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
                             <i class="fa fa-robot"/> AI Assistant
                         </h1>
-                        <p class="text-muted">Ask questions about your HR data using natural language</p>
                     </div>
                     
                     <group>
-                        <group string="Example Questions">
-                            <p>• What is our average employee performance?</p>
-                            <p>• Which departments need more training?</p>
-                            <p>• Who are the employees at risk of leaving?</p>
-                            <p>• Show me performance trends</p>
-                        </group>
-                        <group string="How to Use">
-                            <p>1. Create a new chat record</p>
-                            <p>2. Enter your question</p>
-                            <p>3. AI will analyze your HR data</p>
-                            <p>4. View the answer and insights</p>
-                        </group>
+                        <field name="question" placeholder="Ask something like: 'Show me top performing employees'..." required="1"/>
                     </group>
                     
-                    <div class="alert alert-info mt16">
-                        <p>
-                            <strong><i class="fa fa-lightbulb-o"/> Tip:</strong>
-                            Use the "Chat History" menu to view all previous conversations.
-                        </p>
+                    <notebook invisible="not answer">
+                        <page string="Answer">
+                            <field name="answer" widget="html" readonly="1" nolabel="1"/>
+                            <group col="4">
+                                <field name="response_time"/>
+                                <field name="create_date"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    
+                    <div class="alert alert-info mt16" invisible="answer">
+                        <p><strong><i class="fa fa-lightbulb-o"/> Tip:</strong></p>
+                        <p>• What is our average employee performance?</p>
+                        <p>• Which departments need more training?</p>
+                        <p>• Show me performance trends</p>
                     </div>
                 </sheet>
             </form>

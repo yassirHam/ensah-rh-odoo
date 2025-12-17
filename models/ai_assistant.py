@@ -59,6 +59,31 @@ class AIAssistant(models.Model):
                 'error': str(e),
                 'question': question
             }
+            
+    def action_submit_query(self):
+        """Action for UI button to submit question"""
+        self.ensure_one()
+        if not self.question:
+            return
+            
+        # Process question
+        result = self.ask_question(self.question)
+        
+        if result.get('success'):
+            # Reload view to show answer (since ask_question creates a new record or we should update this one?
+            # actually ask_question creates a NEW record. 
+            # If we are in a 'new' form (id=False), we can't easily swap to the new id without returning an action.
+            # If we are in an existing form, we probably shouldn't be asking new questions there.
+            
+            # Let's change strategy slightly: Update THIS record if it's transient-like or just return action to open the new one
+            
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'ensa.ai.assistant',
+                'res_id': result['id'],
+                'view_mode': 'form',
+                'target': 'current',
+            }
     
     def _gather_hr_context(self):
         """Gather comprehensive HR data for AI context"""
@@ -120,14 +145,16 @@ class AIAssistant(models.Model):
         return top[:5]
     
     def _format_answer(self, answer):
-        """Format AI answer as beautiful HTML"""
+        """Format AI answer as readable HTML"""
+        # Replace newlines with <br> tags and wrap in clean container
+        formatted = answer.replace('\n', '<br>')
         return f"""
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-            <div style="color: #2c3e50; line-height: 1.6;">
-                {answer}
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <div style="color: #2c3e50; line-height: 1.8; font-size: 14px;">
+                {formatted}
             </div>
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #dee2e6; font-size: 12px; color: #6c757d;">
-                <i class="fa fa-robot"></i> Powered by AI • Generated: {fields.Datetime.now().strftime('%H:%M:%S')}
+                <i class="fa fa-robot"></i> AI Response • Generated: {fields.Datetime.now().strftime('%H:%M:%S')}
             </div>
         </div>
         """

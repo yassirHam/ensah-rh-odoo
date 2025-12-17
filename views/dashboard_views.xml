@@ -25,16 +25,16 @@
                                             <i class="fa fa-robot fa-2x" style="vertical-align: middle;"/> AI Insights
                                         </h3>
                                         <div id="ai-insights-content" style="font-size: 1.1em; line-height: 1.6;">
-                                            <p><i class="fa fa-spinner fa-spin"/> Loading AI insights...</p>
+                                            <field name="ai_insights_html" widget="html" readonly="1" nolabel="1"/>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 text-right">
-                                        <div class="btn btn-light btn-lg" style="border-radius: 50px; padding: 12px 30px; cursor: pointer;">
-                                            <i class="fa fa-refresh"/> Refresh
-                                        </div>
-                                        <div class="btn btn-outline-light btn-lg mt-2" style="border-radius: 50px; padding: 12px 30px; display: block; width: 100%; cursor: pointer;">
-                                            <i class="fa fa-comments"/> Ask AI
-                                        </div>
+                                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
+                                        <button name="action_refresh" string="Refresh" type="object" 
+                                                class="btn btn-light btn-lg mb-2" icon="fa-refresh"
+                                                style="border-radius: 50px; padding: 12px 30px; min-width: 200px;"/>
+                                        <button name="%(action_ai_assistant_chat)d" string="Ask AI" type="action" 
+                                                class="btn btn-outline-light btn-lg" icon="fa-comments"
+                                                style="border-radius: 50px; padding: 12px 30px; min-width: 200px;"/>
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +52,9 @@
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Total Employees
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-employees">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <field name="total_employees" readonly="1"/>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fa fa-users fa-2x text-gray-300"/>
@@ -71,7 +73,9 @@
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 Avg Performance
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-performance">0.0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <field name="avg_performance" readonly="1"/>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fa fa-star fa-2x text-gray-300"/>
@@ -90,7 +94,9 @@
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                                 Active Trainings
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-trainings">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <field name="active_trainings" readonly="1"/>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fa fa-graduation-cap fa-2x text-gray-300"/>
@@ -109,7 +115,9 @@
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Evaluations
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-evaluations">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <field name="total_evaluations" readonly="1"/>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fa fa-clipboard fa-2x text-gray-300"/>
@@ -131,9 +139,7 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <div id="turnover-risks-content">
-                                        <p class="text-muted">Loading...</p>
-                                    </div>
+                                    <field name="turnover_risks_html" widget="html" readonly="1" nolabel="1"/>
                                 </div>
                             </div>
                         </div>
@@ -147,9 +153,7 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <div id="anomalies-content">
-                                        <p class="text-muted">Loading...</p>
-                                    </div>
+                                    <field name="anomalies_html" widget="html" readonly="1" nolabel="1"/>
                                 </div>
                             </div>
                         </div>
@@ -167,9 +171,9 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="predictions-content">
-                                        <div class="btn btn-primary btn-block" id="load-predictions" style="cursor: pointer;">
-                                            <i class="fa fa-magic"/> Generate Predictions
-                                        </div>
+                                        <button name="action_generate_predictions" string="Generate Predictions" 
+                                                type="object" class="btn btn-primary btn-block" icon="fa-magic"/>
+                                        <field name="predictions_html" widget="html" readonly="1" nolabel="1" class="mt-3"/>
                                     </div>
                                 </div>
                             </div>
@@ -185,9 +189,9 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="suggestions-content">
-                                        <div class="btn btn-success btn-block" id="load-suggestions" style="cursor: pointer;">
-                                            <i class="fa fa-bolt"/> Get Suggestions
-                                        </div>
+                                        <button name="action_get_suggestions" string="Get Suggestions" 
+                                                type="object" class="btn btn-success btn-block" icon="fa-bolt"/>
+                                        <field name="suggestions_html" widget="html" readonly="1" nolabel="1" class="mt-3"/>
                                     </div>
                                 </div>
                             </div>
@@ -198,12 +202,13 @@
         </field>
     </record>
     
-    <!-- Dashboard Action -->
-    <record id="action_ensa_dashboard" model="ir.actions.act_window">
+    <!-- Dashboard Server Action -->
+    <record id="action_ensa_dashboard_server" model="ir.actions.server">
         <field name="name">HR Dashboard</field>
-        <field name="res_model">ensa.dashboard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_ensa_dashboard"/>
-        <field name="target">current</field>
+        <field name="model_id" ref="model_ensa_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_open_dashboard()
+        </field>
     </record>
 </odoo>

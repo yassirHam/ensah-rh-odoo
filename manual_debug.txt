@@ -1,0 +1,22 @@
+﻿python.exe : ERROR: 
+couldn't create the 
+logfile directory. 
+Logging to the standard 
+output.
+At line:1 char:1
++ & "C:\Program 
+Files\Odoo 17.0.20251024\p
+ython\python.exe" 
+"C:\Program ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (E  
+  RROR: couldn't...tand   
+ ard output.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
