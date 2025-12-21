@@ -8,7 +8,7 @@ class EmployeeEquipment(models.Model):
     _order = 'assignment_date desc'
 
     name = fields.Char(string="Equipment Name", required=True)
-    employee_id = fields.Many2one('hr.employee', string="Assigned To", required=True)
+    employee_id = fields.Many2one('hr.employee', string="Assigned To")
     equipment_type = fields.Selection([
         ('computer', 'Computer'),
         ('phone', 'Phone'),
@@ -17,7 +17,7 @@ class EmployeeEquipment(models.Model):
         ('other', 'Other')
     ], string="Type", default='computer')
     serial_number = fields.Char(string="Serial Number", copy=False)
-    assignment_date = fields.Date(string="Assignment Date", default=fields.Date.today)
+    assignment_date = fields.Date(string="Assignment Date")
     return_date = fields.Date(string="Return Date")
     condition = fields.Selection([
         ('excellent', 'Excellent'),
@@ -33,15 +33,26 @@ class EmployeeEquipment(models.Model):
     ], string="Condition at Return")
     notes = fields.Text(string="Notes")
     state = fields.Selection([
+        ('available', 'In Stock'),
         ('assigned', 'Assigned'),
         ('returned', 'Returned'),
         ('damaged', 'Damaged'),
         ('lost', 'Lost')
-    ], string="Status", default='assigned', tracking=True)
+    ], string="Status", default='available', tracking=True)
     active = fields.Boolean(string="Active", default=True)
     value = fields.Monetary(string="Asset Value")
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     warranty_expiry = fields.Date(string="Warranty Expiry")
+
+    def action_assign(self):
+        """Quick assignment to an employee"""
+        self.ensure_one()
+        if not self.employee_id:
+             raise ValidationError(_("Please select an employee before assigning."))
+        self.write({
+            'state': 'assigned',
+            'assignment_date': fields.Date.today()
+        })
 
     @api.constrains('serial_number')
     def _check_serial_unique(self):

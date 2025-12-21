@@ -10,36 +10,11 @@
                     <!-- Header -->
                     <div class="oe_title mb32">
                         <h1 style="color: #2c3e50;">
-                            <i class="fa fa-dashboard"/> HR Analytics Dashboard
+                            <i class="fa fa-dashboard"/> HR Dashboard
                         </h1>
-                        <p class="text-muted">Real-time insights powered by AI</p>
                     </div>
                     
-                    <!-- AI Insights Banner -->
-                    <div class="row mb32">
-                        <div class="col-12">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 30px; color: white; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <h3 style="color: white; margin-bottom: 15px;">
-                                            <i class="fa fa-robot fa-2x" style="vertical-align: middle;"/> AI Insights
-                                        </h3>
-                                        <div id="ai-insights-content" style="font-size: 1.1em; line-height: 1.6;">
-                                            <field name="ai_insights_html" widget="html" readonly="1" nolabel="1"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
-                                        <button name="action_refresh" string="Refresh" type="object" 
-                                                class="btn btn-light btn-lg mb-2" icon="fa-refresh"
-                                                style="border-radius: 50px; padding: 12px 30px; min-width: 200px;"/>
-                                        <button name="%(action_ai_assistant_chat)d" string="Ask AI" type="action" 
-                                                class="btn btn-outline-light btn-lg" icon="fa-comments"
-                                                style="border-radius: 50px; padding: 12px 30px; min-width: 200px;"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- AI Insights Banner REMOVED -->
                     
                     <!-- Stats Cards Row -->
                     <div class="row mb32">
@@ -159,44 +134,7 @@
                         </div>
                     </div>
                     
-                    <!-- Predictions & Suggestions Row -->
-                    <div class="row">
-                        <!-- Future Predictions -->
-                        <div class="col-lg-6 mb-4">
-                            <div class="card shadow h-100">
-                                <div class="card-header py-3 bg-primary text-white">
-                                    <h6 class="m-0 font-weight-bold">
-                                        <i class="fa fa-line-chart"/> Future Predictions
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div id="predictions-content">
-                                        <button name="action_generate_predictions" string="Generate Predictions" 
-                                                type="object" class="btn btn-primary btn-block" icon="fa-magic"/>
-                                        <field name="predictions_html" widget="html" readonly="1" nolabel="1" class="mt-3"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- AI Suggestions -->
-                        <div class="col-lg-6 mb-4">
-                            <div class="card shadow h-100">
-                                <div class="card-header py-3 bg-success text-white">
-                                    <h6 class="m-0 font-weight-bold">
-                                        <i class="fa fa-lightbulb-o"/> AI Suggestions
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div id="suggestions-content">
-                                        <button name="action_get_suggestions" string="Get Suggestions" 
-                                                type="object" class="btn btn-success btn-block" icon="fa-bolt"/>
-                                        <field name="suggestions_html" widget="html" readonly="1" nolabel="1" class="mt-3"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Predictions & Suggestions Row REMOVED -->
                 </sheet>
             </form>
         </field>

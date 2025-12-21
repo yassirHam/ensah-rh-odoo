@@ -66,21 +66,40 @@ class AIAssistant(models.Model):
         if not self.question:
             return
             
-        # Process question
-        result = self.ask_question(self.question)
-        
-        if result.get('success'):
-            # Reload view to show answer (since ask_question creates a new record or we should update this one?
-            # actually ask_question creates a NEW record. 
-            # If we are in a 'new' form (id=False), we can't easily swap to the new id without returning an action.
-            # If we are in an existing form, we probably shouldn't be asking new questions there.
+        try:
+            # Gather context AND answer question in one go (in-place)
+            start_time = datetime.now()
+            context = self._gather_hr_context()
             
-            # Let's change strategy slightly: Update THIS record if it's transient-like or just return action to open the new one
+            ai_service = self.env['ensa.ai.service'].get_ai_service()
+            answer = ai_service.answer_query(self.question, context)
             
+            response_time = (datetime.now() - start_time).total_seconds()
+            formatted_answer = self._format_answer(answer)
+            
+            # Update THIS record
+            self.write({
+                'answer': formatted_answer,
+                'response_time': response_time,
+                'context_data': str(context)[:500]
+            })
+            
+            # Return action to reload/keep form open
             return {
                 'type': 'ir.actions.act_window',
                 'res_model': 'ensa.ai.assistant',
-                'res_id': result['id'],
+                'res_id': self.id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
+        except Exception as e:
+            self.write({
+                'answer': f"<p style='color:red'>Error: {str(e)}</p>"
+            })
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'ensa.ai.assistant',
+                'res_id': self.id,
                 'view_mode': 'form',
                 'target': 'current',
             }
@@ -91,9 +110,18 @@ class AIAssistant(models.Model):
         Evaluation = self.env['ensa.evaluation']
         Training = self.env['ensa.training']
         
-        employees = Employee.search([('active', '=', True)])
+        # Filter for ENSAH employees
+        employees = Employee.search([
+            ('active', '=', True),
+            ('company_id.name', 'ilike', 'ENSA')
+        ])
+        if not employees:
+             employees = Employee.search([('active', '=', True)])
         evaluations = Evaluation.search([('state', '=', 'completed')])
         trainings = Training.search([])
+        internships = self.env['ensa.internship'].search([])
+        projects = self.env['ensa.student.project'].search([])
+        equipment = self.env['ensa.equipment'].search([]) if 'ensa.equipment' in self.env else self.env['ensa.equipment']
         
         # Calculate key metrics
         avg_performance = sum(evaluations.mapped('overall_score')) / len(evaluations) if evaluations else 0
@@ -105,19 +133,55 @@ class AIAssistant(models.Model):
             departments[dept] = departments.get(dept, 0) + 1
         
         return {
-            'total_employees': len(employees),
-            'avg_performance': round(avg_performance, 2),
-            'departments': departments,
-            'total_evaluations': len(evaluations),
-            'completed_trainings': len(trainings.filtered(lambda t: t.status == 'completed')),
-            'active_internships': self.env['ensa.internship'].search_count([('status', '=', 'in_progress')]) if 'ensa.internship' in self.env else 0,
-            'recent_hires': len(employees.filtered(lambda e: e.first_contract_date and (fields.Date.today() - e.first_contract_date).days <= 90)),
-            'extra': {
-                'evaluation_distribution': self._get_eval_distribution(evaluations),
-                'top_performers': self._get_top_performers(employees, evaluations),
-                'training_categories': list(set(trainings.mapped('category')))
-            }
+            'HR_Module': {
+                'total_employees': len(employees),
+                'active_employees_ensa': len(employees),
+                'avg_performance_score': round(avg_performance, 2),
+                'total_evaluations': len(evaluations),
+                'top_performers': self._get_individual_performance(employees, evaluations),
+                'training_programs': {
+                    'total': len(trainings),
+                    'completed': len(trainings.filtered(lambda t: t.status == 'completed'))
+                },
+                'departments_distribution': departments,
+                'equipment_status': {
+                    'total_assigned': len(equipment.filtered(lambda e: e.state == 'assigned')),
+                    'available': len(equipment.filtered(lambda e: e.state == 'available'))
+                }
+            },
+            'Student_Module': {
+                'internships': {
+                    'active': len(internships.filtered(lambda i: i.status == 'in_progress')),
+                    'total': len(internships),
+                    'success_rate': round(sum(internships.mapped('success_probability')) / len(internships) * 100, 1) if internships else 0
+                },
+                'student_projects': {
+                    'active': len(projects.filtered(lambda p: p.status == 'in_progress')),
+                    'total': len(projects),
+                    'common_technologies': self._get_common_tech(projects)
+                }
+            },
+            'Last_Updated': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+
+    def _get_status_counts(self, records):
+        """Helper to count records by status"""
+        counts = {}
+        for r in records:
+            s = r.status if 'status' in r else 'unknown'
+            counts[s] = counts.get(s, 0) + 1
+        return counts
+
+    def _get_common_tech(self, projects):
+        """Extract common technologies from projects"""
+        techs = {}
+        for p in projects:
+            if p.technology_stack:
+                for t in p.technology_stack.split(','):
+                    t = t.strip()
+                    techs[t] = techs.get(t, 0) + 1
+        # Return top 5
+        return dict(sorted(techs.items(), key=lambda item: item[1], reverse=True)[:5])
     
     def _get_eval_distribution(self, evaluations):
         """Get evaluation score distribution"""
@@ -133,6 +197,21 @@ class AIAssistant(models.Model):
                 dist['poor'] += 1
         return dist
     
+    def _get_individual_performance(self, employees, evaluations):
+        """Get individual scores for top employees"""
+        perf = []
+        for emp in employees:
+            emp_evals = evaluations.filtered(lambda e: e.employee_id == emp)
+            if emp_evals:
+                latest = emp_evals.sorted('date', reverse=True)[0]
+                perf.append({
+                    'name': emp.name,
+                    'last_score': latest.overall_score,
+                    'department': emp.department_id.name or 'N/A'
+                })
+        # Sort and return top 10
+        return sorted(perf, key=lambda x: x['last_score'], reverse=True)[:10]
+
     def _get_top_performers(self, employees, evaluations):
         """Get list of top performing employees"""
         top = []
@@ -146,12 +225,11 @@ class AIAssistant(models.Model):
     
     def _format_answer(self, answer):
         """Format AI answer as readable HTML"""
-        # Replace newlines with <br> tags and wrap in clean container
-        formatted = answer.replace('\n', '<br>')
+        # We now request HTML directly from AI, so we just wrap it
         return f"""
         <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px;">
             <div style="color: #2c3e50; line-height: 1.8; font-size: 14px;">
-                {formatted}
+                {answer}
             </div>
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #dee2e6; font-size: 12px; color: #6c757d;">
                 <i class="fa fa-robot"></i> AI Response • Generated: {fields.Datetime.now().strftime('%H:%M:%S')}
@@ -166,13 +244,15 @@ class AIAssistant(models.Model):
             ai_service = self.env['ensa.ai.service'].get_ai_service()
             context = self._gather_hr_context()
             
-            prompt = f"""Based on this HR data, suggest 3 insightful analyses or visualizations:
-            
+            prompt = f"""You are an HR Analyst. Below is the REAL dataset you must analyze.
+Do not ask for data. It is right here:
+
 Total Employees: {context['total_employees']}
 Average Performance: {context['avg_performance']}/10
 Departments: {list(context['departments'].keys())}
 
-Format as JSON array: [{{"title": "...", "description": "...", "chart_type": "bar/line/pie"}}]"""
+Task: Based on these numbers, suggest 3 insightful analyses or charts we should create.
+Format: Return ONLY a JSON array: [{{"title": "...", "description": "...", "chart_type": "bar/line/pie"}}]"""
             
             suggestions_json = ai_service.generate_text(prompt, max_tokens=300, temperature=0.7)
             
@@ -192,17 +272,20 @@ Format as JSON array: [{{"title": "...", "description": "...", "chart_type": "ba
             # Get historical data
             evaluations = self.env['ensa.evaluation'].search([('state', '=', 'completed')], order='date desc', limit=50)
             
-            prompt = f"""Analyze these recent evaluation scores and predict trends for the next 3 months:
-            
-Recent Scores: {[e.overall_score for e in evaluations[:10]]}
-Average: {sum(evaluations.mapped('overall_score'))/len(evaluations) if evaluations else 0:.1f}
+            prompt = f"""You are an HR Data Analyst. specific data is provided below. 
+You must analyze this data and generate a trend prediction.
+DO NOT ask for more information. Use ONLY the data provided here.
 
-Provide:
-1. Predicted average score for next quarter
-2. Key factors affecting performance
-3. Recommendations to improve trends
+Recent Evaluation Scores: {[e.overall_score for e in evaluations[:10]]}
+Average Score: {sum(evaluations.mapped('overall_score'))/len(evaluations) if evaluations else 0:.1f}
 
-Format as HTML with headings."""
+Task:
+1. Predict the average score for the next quarter based on the recent scores.
+2. Identify key factors affecting performance based on the specific scores above.
+3. Provide concrete recommendations to improve trends.
+
+Output Format:
+Return your analysis as clean HTML with <h3> headings. Do not include introductory text like "Sure, here is..."."""
             
             prediction = ai_service.generate_text(prompt, max_tokens=500, temperature=0.5)
             

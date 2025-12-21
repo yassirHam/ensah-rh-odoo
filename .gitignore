@@ -1,0 +1,10 @@
+whatsapp-bridge/
+.env
+__pycache__/
+*.pyc
+*.lo
+*.o
+*.so
+.DS_Store
+.idea/
+.vscode/

@@ -15,23 +15,20 @@ _logger = logging.getLogger(__name__)
 class AIService:
     """Base AI Service using OpenAI GPT-4"""
     
-    def __init__(self, provider: str = "openai", openai_key: str = None, gemini_key: str = None, huggingface_key: str = None, model: str = None):
+    def __init__(self, provider: str = "huggingface", huggingface_key: str = None, bytez_key: str = None, model: str = None):
         """
         Initialize AI Service with provider selection
         """
         self.provider = provider
-        self.openai_key = openai_key
-        self.gemini_key = gemini_key
         self.huggingface_key = huggingface_key
+        self.bytez_key = bytez_key
         
         # Default models per provider if not specified
         if not model:
-            if provider == "openai":
-                self.model = "gpt-4o-mini"
-            elif provider == "gemini":
-                self.model = "gemini-flash-latest"
-            elif provider == "huggingface":
-                self.model = "google/gemma-2-2b-it"
+            if provider == "huggingface":
+                self.model = "microsoft/Phi-3-mini-4k-instruct"
+            elif provider == "bytez":
+                self.model = "Qwen/Qwen3-4B-Instruct-2507"
         else:
             self.model = model
             
@@ -54,15 +51,17 @@ class AIService:
             _logger.info(f"Generating AI text with provider {self.provider} / model {self.model}")
             
             result = ""
-            if self.provider == 'openai':
-                result = self._generate_openai(prompt, max_tokens, temperature)
-            elif self.provider == 'gemini':
-                result = self._generate_gemini(prompt, max_tokens, temperature)
-            elif self.provider == 'huggingface':
+            if self.provider == 'huggingface':
                 result = self._generate_huggingface(prompt, max_tokens, temperature)
+            elif self.provider == 'bytez':
+                result = self._generate_bytez(prompt, max_tokens, temperature)
             else:
                 raise UserError(_("Unknown AI provider: %s") % self.provider)
             
+            # Ensure result is a string
+            if not isinstance(result, str):
+                result = str(result)
+                
             # Cache the result
             self._cache[cache_key] = result.strip()
             return result.strip()
@@ -80,23 +79,23 @@ class AIService:
         if not self.huggingface_key:
              raise UserError(_("Hugging Face access token is missing"))
         
-        # Use Router URL with OpenAI Compatibility
-        # This replaces the deprecated api-inference.huggingface.co
+        # Use Hugging Face Router (OpenAI Compatible)
+        # This is the modern endpoint for supported models
         api_url = "https://router.huggingface.co/v1/chat/completions"
+        
         headers = {
             "Authorization": f"Bearer {self.huggingface_key}",
             "Content-Type": "application/json"
         }
         
-        # Construct payload using OpenAI Chat Completion + parameters
-        # The router handles the chat template application automatically
+        # The Router requires OpenAI-style 'messages' payload
         payload = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": "You are a helpful AI assistant."},
                 {"role": "user", "content": prompt}
             ],
-            "max_tokens": max_tokens,
+            "max_tokens": max_tokens,  # Router maps this correctly
             "temperature": max(0.1, temperature),
             "stream": False
         }
@@ -105,7 +104,6 @@ class AIService:
         
         if response.status_code == 200:
             result = response.json()
-            # Parse OpenAI-style response
             try:
                 if 'choices' in result and len(result['choices']) > 0:
                     return result['choices'][0]['message']['content']
@@ -113,246 +111,123 @@ class AIService:
                     return str(result)
             except (KeyError, IndexError) as e:
                 _logger.error(f"Failed to parse Hugging Face response: {result}")
-                raise UserError(f"Hugging Face Response Parsing Error: {str(e)}")
+                return str(result)
         else:
              # Handle 503 Model Loading
              if response.status_code == 503:
                  raise UserError("Model is loading (cold boot). Please try again in 30 seconds.")
              
-             # Try to extract error message definition
+             # Try to extract error message
              error_msg = response.text
              try:
                  error_json = response.json()
                  if 'error' in error_json:
-                     error_msg = error_json['error']
+                     # Handle nested error objects
+                     if isinstance(error_json['error'], dict):
+                         error_msg = error_json['error'].get('message', str(error_json['error']))
+                     else:
+                         error_msg = error_json['error']
              except:
                  pass
                  
              raise UserError(f"Hugging Face Error: {error_msg}")
 
-    def _generate_openai(self, prompt: str, max_tokens: int, temperature: float) -> str:
-        """Call OpenAI Chat Completions API"""
-        if not self.openai_key:
-             raise UserError(_("OpenAI API key is missing"))
-
-        url = "https://api.openai.com/v1/chat/completions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.openai_key}"
-        }
-        payload = {
-            "model": self.model,
-            "messages": [
-                {"role": "system", "content": "You are an expert HR analyst providing insights."},
-                {"role": "user", "content": prompt}
-            ],
-            "max_tokens": max_tokens,
-            "temperature": temperature
-        }
-        
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        if response.status_code == 200:
-            return response.json()['choices'][0]['message']['content']
-        else:
-            raise UserError(f"OpenAI Error: {response.text}")
-
-    def _generate_gemini(self, prompt: str, max_tokens: int, temperature: float) -> str:
-        """Call Google Gemini REST API"""
-        if not self.gemini_key:
-             raise UserError(_("Gemini API key is missing"))
-        
-        # Model Mapping: UI Selection -> Actual API ID
-        # The API requires specific version IDs or valid aliases from ListModels
-        model_map = {
-            # Direct valid aliases
-            'gemini-flash-latest': 'gemini-flash-latest',
-            'gemini-pro-latest': 'gemini-pro-latest',
-            # Mappings for legacy/invalid keys -> New Valid Models
-            'gemini-1.5-flash': 'gemini-flash-latest',
-            'gemini-1.5-flash-latest': 'gemini-flash-latest',
-            'gemini-1.5-pro-latest': 'gemini-pro-latest',
-            'gemini-pro': 'gemini-pro-latest',
-        }
-        
-        # Use mapped ID or fallback to the raw model string
-        api_model = model_map.get(self.model, self.model)
-             
-        # Gemini API Endpoint (v1beta)
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{api_model}:generateContent?key={self.gemini_key}"
-        
-        headers = {"Content-Type": "application/json"}
-        payload = {
-            "contents": [{
-                "parts": [{"text": prompt}]
-            }],
-            "generationConfig": {
-                "maxOutputTokens": max_tokens,
-                "temperature": temperature
-            }
-        }
-        
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        
-        if response.status_code == 200:
-            data = response.json()
-            try:
-                # Extract text from Gemini response structure
-                text = data['candidates'][0]['content']['parts'][0]['text']
-                return text
-            except (KeyError, IndexError):
-                _logger.error(f"Unexpected Gemini response structure: {data}")
-                return "Error: Could not parse Gemini response."
-        else:
-             raise UserError(f"Gemini Error: {response.text}")
-
-    
-    def analyze_performance(self, employee_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Analyze employee performance using AI
-        
-        Args:
-            employee_data: Dictionary with employee performance metrics
-            
-        Returns:
-            Analysis results with insights and recommendations
-        """
-        prompt = f"""
-Analyze this employee's performance data and provide insights:
-
-Employee: {employee_data.get('name', 'Unknown')}
-Department: {employee_data.get('department', 'Unknown')}
-Recent Evaluation Scores: {employee_data.get('scores', [])}
-Average Score: {employee_data.get('avg_score', 0):.1f}/10
-Trend: {employee_data.get('trend', 'Unknown')}
-Training Completed: {employee_data.get('training_count', 0)}
-Tenure: {employee_data.get('tenure', 0)} years
-
-Provide:
-1. Brief performance summary (2-3 sentences)
-2. Key strengths
-3. Areas for improvement
-4. Recommendation (promote/retain/improve/develop)
-5. Suggested next steps
-
-Format as JSON with keys: summary, strengths, improvements, recommendation, next_steps
-"""
-        
-        response_text = self.generate_text(prompt, max_tokens=600, temperature=0.5)
-        
-        try:
-            # Try to parse JSON response
-            result = json.loads(response_text)
-        except json.JSONDecodeError:
-            # Fallback if not valid JSON
-            result = {
-                "summary": response_text,
-                "recommendation": "retain"
-            }
-        
-        return result
-    
-    def detect_turnover_risk(self, employee_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Predict employee turnover risk using AI analysis
-        
-        Args:
-            employee_data: Employee performance and engagement data
-            
-        Returns:
-            Risk assessment with score and factors
-        """
-        prompt = f"""
-Assess turnover risk for this employee:
-
-Performance Trend: {employee_data.get('trend', 'stable')}
-Recent Scores: {employee_data.get('recent_scores', [])}
-Average Score: {employee_data.get('avg_score', 0):.1f}/10
-Last Evaluation: {employee_data.get('days_since_eval', 0)} days ago
-Training Participation: {employee_data.get('training_count', 0)} courses
-Tenure: {employee_data.get('tenure', 0)} years
-Has Certifications: {employee_data.get('has_certs', False)}
-
-Assess turnover risk (0-100%) and identify top 3 risk factors.
-Format as JSON: {{"risk_score": 0-100, "risk_level": "low/medium/high", "factors": ["factor1", "factor2", "factor3"], "mitigation": "action to take"}}
-"""
-        
-        response_text = self.generate_text(prompt, max_tokens=400, temperature=0.3)
-        
-        try:
-            result = json.loads(response_text)
-        except json.JSONDecodeError:
-            # Default low risk if parsing fails
-            result = {
-                "risk_score": 30,
-                "risk_level": "low",
-                "factors": ["Insufficient data"],
-                "mitigation": "Continue monitoring"
-            }
-        
-        return result
-    
-    def answer_query(self, question: str, context_data: Dict[str, Any]) -> str:
-        """
-        Answer natural language questions about HR data
-        
-        Args:
-            question: User's question
-            context_data: Relevant HR data for context
-            
-        Returns:
-            Natural language answer
-        """
-        prompt = f"""
-Answer this HR question based on the data:
-
-Question: {question}
-
-Available Data:
-- Total Employees: {context_data.get('total_employees', 0)}
-- Average Performance Score: {context_data.get('avg_performance', 0):.1f}/10
-- Departments: {context_data.get('departments', [])}
-- Recent Evaluations: {context_data.get('recent_evaluations', 0)}
-- Training Programs: {context_data.get('training_programs', 0)}
-- Active Internships: {context_data.get('active_internships', 0)}
-- Active Projects: {context_data.get('active_projects', 0)}
-
-Additional Context: {json.dumps(context_data.get('extra', {}), indent=2)}
-
-Provide a clear, data-driven answer in 2-4 sentences. Include specific numbers.
-"""
-        
-        return self.generate_text(prompt, max_tokens=300, temperature=0.6)
-    
-    def generate_embeddings(self, text: str) -> List[float]:
-        """
-        Generate embeddings for text via direct HTTP request
-        """
-        if self.provider != 'openai':
-            # TODO: Implement Gemini embeddings (models/embedding-001)
-            _logger.warning("Embeddings not yet supported for provider: %s", self.provider)
-            return []
+    def _generate_bytez(self, prompt: str, max_tokens: int, temperature: float) -> str:
+        """Call Bytez API for Qwen models (Direct HTTP)"""
+        if not self.bytez_key:
+             raise UserError(_("Bytez API key is missing"))
 
         try:
-            url = "https://api.openai.com/v1/embeddings"
+            # Direct API call to avoid 'bytez' library dependency issues
+            url = f"https://api.bytez.com/models/v2/{self.model}"
+            
             headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.openai_key}"
-            }
-            payload = {
-                "input": text,
-                "model": "text-embedding-ada-002"
+                "Authorization": f"Key {self.bytez_key}",
+                "Content-Type": "application/json"
             }
             
-            response = requests.post(url, headers=headers, json=payload, timeout=10)
+            payload = {
+                "input": [{"role": "user", "content": prompt}],
+                "params": {
+                    "temperature": max(0.1, temperature),
+                    "max_new_tokens": max_tokens
+                },
+                "stream": False
+            }
+            
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
             
             if response.status_code == 200:
-                return response.json()['data'][0]['embedding']
+                result = response.json()
+                if result.get('output'):
+                    out = result['output']
+                    if isinstance(out, (dict, list)):
+                        return json.dumps(out)
+                    return str(out)
+                else:
+                    return str(result)
             else:
-                _logger.error(f"Embedding error: {response.text}")
-                return []
+                 error_msg = response.text
+                 try:
+                     err_json = response.json()
+                     if 'error' in err_json:
+                         error_msg = err_json['error']
+                 except:
+                     pass
+                 raise UserError(f"Bytez API Error ({response.status_code}): {error_msg}")
+
         except Exception as e:
-            _logger.error(f"Embedding generation error: {str(e)}")
-            return []
+            _logger.error(f"Bytez generation error: {str(e)}")
+            raise UserError(f"Bytez Service Error: {str(e)}")
+
+    def answer_query(self, question: str, context_data: Dict[str, Any]) -> str:
+        """
+        Answer a natural language query about HR data
+        
+        Args:
+            question: The user's question
+            context_data: Dictionary containing HR context/stats
+            
+        Returns:
+            AI generated answer
+        """
+        prompt = f"""
+You are an intelligent HR Assistant for ENSA Hoceima. 
+Use the following real-time data to answer the user's question accurately.
+
+CONTEXT DATA:
+{json.dumps(context_data, indent=2)}
+
+USER QUESTION: 
+{question}
+
+INSTRUCTIONS:
+- You are analyzing the "Ensa Hoceima HR & Student Management System".
+- "HR Module" refers to Employees, Evaluations, and Trainings.
+- "Student Module" refers to Internships and Student Projects.
+- If asked "Who is the best employee", check the "top_performers" list in the context and answer DIRECTLY with names and scores.
+- Do NOT say "it's difficult to say" or "I need more information" if data is present in the context.
+- Be precise, technical, and use the provided individual scores.
+- **IMPORTANT: Format your response as clean HTML tags (e.g., <p>, <ul>, <li>, <strong>). Do NOT use Markdown (no *, no #).**
+- Keep the design clean and minimal.
+"""
+        return self.generate_text(prompt, max_tokens=500, temperature=0.5)
+
+    def _generate_openai(self, prompt: str, max_tokens: int, temperature: float) -> str:
+        """Deprecated: OpenAI integration removed"""
+        raise UserError(_("OpenAI integration has been removed."))
+
+    def _generate_gemini(self, prompt: str, max_tokens: int, temperature: float) -> str:
+        """Deprecated: Gemini integration removed"""
+        raise UserError(_("Gemini integration has been removed."))
+        
+    def generate_embeddings(self, text: str) -> List[float]:
+        """
+        Generate embeddings (Not currently supported without OpenAI)
+        """
+        # TODO: Implement Hugging Face embeddings
+        _logger.warning("Embeddings currently disabled.")
+        return []
     
     def detect_anomalies(self, data_points: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -371,19 +246,69 @@ Data Points: {json.dumps(data_points, indent=2)}
 
 Identify any unusual patterns, outliers, or concerning trends.
 For each anomaly found, provide:
-- What is unusual
-- Why it matters
+- What is unusual (title)
+- Why it matters (description)
 - Recommended action
 
-Format as JSON list: [{{"type": "anomaly type", "description": "what's wrong", "severity": "low/medium/high", "action": "what to do"}}]
+Format as JSON list: [{{"title": "...", "description": "...", "severity": "low/medium/high"}}]
 """
         
+        _logger.info(f"AI: Sending anomaly detection prompt. Provider: {self.provider}")
         response_text = self.generate_text(prompt, max_tokens=600, temperature=0.4)
+        _logger.info(f"AI: Raw anomaly response: {response_text[:200]}...")
         
         try:
-            result = json.loads(response_text)
+            # Clean possible markdown wrap
+            clean_json = response_text.strip()
+            if clean_json.startswith('```json'): clean_json = clean_json[7:]
+            if clean_json.endswith('```'): clean_json = clean_json[:-3]
+            
+            result = json.loads(clean_json)
             return result if isinstance(result, list) else []
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            _logger.error(f"AI: Anomaly JSON parsing error: {str(e)}")
+            return []
+
+    def detect_turnover_risk(self, emp_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Predict turnover risk for an employee using AI
+        
+        Args:
+            emp_data: Dictionary of employee metrics
+            
+        Returns:
+            Dictionary with risk score and mitigation
+        """
+        # Optimized to use batch_analyze_turnover for multiple employees
+        results = self.batch_analyze_turnover([emp_data])
+        return results[0] if results else {"risk_score": 0, "risk_level": "low"}
+
+    def batch_analyze_turnover(self, employees_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Analyze multiple employees for turnover risk in a single AI call.
+        """
+        if not employees_list: return []
+        
+        prompt = f"""
+Analyze the turnover risk for these {len(employees_list)} employees:
+{json.dumps(employees_list, indent=2)}
+
+Task: Identify risk factors and calculate a risk score (0-100) for EACH.
+Return ONLY a JSON list of objects: [{{"employee_name": "...", "risk_score": integer, "risk_level": "low/medium/high"}}]
+"""
+        _logger.info(f"AI: Sending batch turnover prompt for {len(employees_list)} emps")
+        response_text = self.generate_text(prompt, max_tokens=1000, temperature=0.3)
+        _logger.info(f"AI: Raw batch turnover response: {response_text[:200]}...")
+        
+        try:
+            clean_json = response_text.strip()
+            if clean_json.startswith('```json'): clean_json = clean_json[7:]
+            if clean_json.endswith('```'): clean_json = clean_json[:-3]
+            
+            result = json.loads(clean_json)
+            return result if isinstance(result, list) else []
+        except Exception as e:
+            _logger.error(f"AI: Batch turnover JSON parsing error: {str(e)}")
             return []
     
     def generate_document_content(self, doc_type: str, data: Dict[str, Any]) -> str:
@@ -452,6 +377,7 @@ class OdooAIService(models.AbstractModel):
         openai_key = params.get_param('ensa_hr.openai_api_key')
         gemini_key = params.get_param('ensa_hr.gemini_api_key')
         huggingface_key = params.get_param('ensa_hr.huggingface_api_key')
+        bytez_key = params.get_param('ensa_hr.bytez_api_key')
         
         model = None
         if provider == 'openai':
@@ -459,7 +385,9 @@ class OdooAIService(models.AbstractModel):
         elif provider == 'gemini':
             model = params.get_param('ensa_hr.gemini_model', 'gemini-flash-latest')
         elif provider == 'huggingface':
-            model = params.get_param('ensa_hr.huggingface_model', 'HuggingFaceH4/zephyr-7b-beta')
+            model = params.get_param('ensa_hr.huggingface_model', 'microsoft/Phi-3-mini-4k-instruct')
+        elif provider == 'bytez':
+            model = params.get_param('ensa_hr.bytez_model', 'Qwen/Qwen3-4B-Instruct-2507')
             
-        return AIService(provider, openai_key=openai_key, gemini_key=gemini_key, huggingface_key=huggingface_key, model=model)
+        return AIService(provider, huggingface_key=huggingface_key, bytez_key=bytez_key, model=model)
 

@@ -5,7 +5,8 @@
         <field name="model">ensa.equipment</field>
         <field name="type">tree</field>
         <field name="arch" type="xml">
-            <tree decoration-success="state=='assigned'" 
+            <tree decoration-info="state=='available'"
+                  decoration-success="state=='assigned'" 
                   decoration-warning="state=='returned'"
                   decoration-danger="state in ('damaged', 'lost')">
                 <field name="name"/>
@@ -30,7 +31,10 @@
             <form string="Equipment Assignment">
                 <header>
                     <field name="state" widget="statusbar" options="{'clickable': '1'}" 
-                           statusbar_visible="assigned,returned,damaged,lost"/>
+                           statusbar_visible="available,assigned,returned,damaged,lost"/>
+                    <button name="action_assign" type="object" string="Assign to Employee" 
+                            class="oe_highlight" icon="fa-user-plus"
+                            invisible="state != 'available'" />
                     <button name="action_return" type="object" string="Return Equipment" 
                             class="oe_highlight" icon="fa-undo"
                             invisible="state != 'assigned'" />
@@ -64,9 +68,9 @@
                     </div>
                     
                     <group>
-                        <group>
-                            <field name="employee_id" options="{'no_create': True}" required="1"/>
-                            <field name="assignment_date" required="1"/>
+                        <group name="assignment_info">
+                            <field name="employee_id" options="{'no_create': True}" required="state != 'available'"/>
+                            <field name="assignment_date" required="state != 'available'"/>
                             <field name="condition"/>
                             <field name="warranty_expiry" widget="remaining_days"/>
                         </group>
@@ -108,7 +112,8 @@
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
-                            <div class="card border-left-{{ record.state.raw_value == 'assigned' ? 'success' : 
+                            <div class="card border-left-{{ record.state.raw_value == 'available' ? 'primary' : 
+                                              record.state.raw_value == 'assigned' ? 'success' : 
                                               record.state.raw_value == 'returned' ? 'info' : 
                                               record.state.raw_value == 'damaged' ? 'warning' : 'danger' }} shadow h-100 py-2">
                                 <div class="card-body">
@@ -125,13 +130,17 @@
                                                 <field name="serial_number"/>
                                             </div>
                                             <div class="mt2">
-                                                <span class="badge bg-primary">
+                                                <span t-if="record.employee_id.raw_value" class="badge bg-primary">
                                                     <field name="employee_id"/>
+                                                </span>
+                                                <span t-if="!record.employee_id.raw_value" class="badge bg-secondary">
+                                                    In Stock
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <span class="badge bg-{{ record.state.raw_value == 'assigned' ? 'success' : 
+                                            <span class="badge bg-{{ record.state.raw_value == 'available' ? 'primary' :
+                                                                      record.state.raw_value == 'assigned' ? 'success' : 
                                                                       record.state.raw_value == 'returned' ? 'info' : 
                                                                       record.state.raw_value == 'damaged' ? 'warning' : 'danger' }} 
                                                   text-white p-2">
@@ -140,7 +149,7 @@
                                         </div>
                                     </div>
                                     <div class="mt3">
-                                        <span class="text-xs text-muted">
+                                        <span t-if="record.assignment_date.raw_value" class="text-xs text-muted">
                                             Assigned: <field name="assignment_date" widget="relative_date"/>
                                         </span>
                                         <br/>
@@ -201,6 +210,7 @@
                 <field name="serial_number"/>
                 <field name="employee_id"/>
                 <field name="equipment_type"/>
+                <filter string="In Stock" name="available" domain="[('state','=','available')]"/>
                 <filter string="Assigned" name="assigned" domain="[('state','=','assigned')]"/>
                 <filter string="Needs Maintenance" name="maintenance" domain="[('warranty_expiry','&lt;',context_today().strftime('%Y-%m-%d'))]"/>
                 <group expand="0" string="Group By">

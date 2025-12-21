@@ -11,6 +11,6 @@ from . import ai_assistant
 
 # Import services
 from ..services import ai_service
-from ..services import whatsapp_service
+
 from ..services import matching_engine
 from ..services import document_generator

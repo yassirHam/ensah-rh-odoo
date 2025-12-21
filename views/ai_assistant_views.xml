@@ -76,13 +76,6 @@
                             </group>
                         </page>
                     </notebook>
-                    
-                    <div class="alert alert-info mt16" invisible="answer">
-                        <p><strong><i class="fa fa-lightbulb-o"/> Tip:</strong></p>
-                        <p>• What is our average employee performance?</p>
-                        <p>• Which departments need more training?</p>
-                        <p>• Show me performance trends</p>
-                    </div>
                 </sheet>
             </form>
         </field>

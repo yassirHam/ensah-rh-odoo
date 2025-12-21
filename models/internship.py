@@ -9,6 +9,7 @@ class StudentInternship(models.Model):
     name = fields.Char(string="Internship Number", required=True, copy=False, readonly=True, default=lambda self: _('New'))
     student_name = fields.Char(string="Student Name", required=True)
     student_email = fields.Char(string="Student Email")
+    student_phone = fields.Char(string="WhatsApp Number", help="Format: +212612345678")
     level = fields.Char(string="Academic Level", help="e.g., 3rd Year, 2nd Year")
     specialization = fields.Char(string="Specialization", help="Engineering specialization")
     host_company = fields.Char(string="Host Company", required=True)

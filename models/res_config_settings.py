@@ -5,54 +5,19 @@ from odoo.exceptions import UserError
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
     
-    openai_api_key = fields.Char(
-        string="OpenAI API Key",
-        config_parameter='ensa_hr.openai_api_key',
-        help="Your OpenAI API key for AI-powered features"
-    )
-
     # AI Provider Selection
     ai_provider = fields.Selection([
-        ('openai', 'OpenAI (GPT-4)'),
-        ('gemini', 'Google Gemini (Free Tier Available)'),
         ('huggingface', 'Hugging Face (Free Open Source)'),
+        ('bytez', 'Bytez (Qwen Models)'),
+        # Deprecated
+        ('openai', 'OpenAI (Deprecated)'),
+        ('gemini', 'Google Gemini (Deprecated)'),
     ], string="AI Provider",
        config_parameter='ensa_hr.ai_provider',
-       default='gemini',
+       default='huggingface',
        help="Select the AI service provider")
 
-    # Gemini Configuration
-    gemini_api_key = fields.Char(
-        string="Gemini API Key",
-        config_parameter='ensa_hr.gemini_api_key',
-        help="Your Google Gemini API key"
-    )
-    gemini_model = fields.Selection([
-        ('gemini-flash-latest', 'Gemini Flash (Latest)'),
-        ('gemini-pro-latest', 'Gemini Pro (Latest)'),
-        ('gemini-2.5-flash', 'Gemini 2.5 Flash'),
-        ('gemini-2.5-pro', 'Gemini 2.5 Pro'),
-        ('gemini-2.0-flash', 'Gemini 2.0 Flash'),
-        # Legacy/Deprecated mappings
-        ('gemini-1.5-flash-latest', 'Gemini 1.5 Flash (Deprecated)'),
-        ('gemini-1.5-pro-latest', 'Gemini 1.5 Pro (Deprecated)'),
-        ('gemini-pro', 'Gemini 1.0 Pro (Deprecated)'),
-        ('gemini-1.5-flash', 'Gemini 1.5 Flash (Legacy)'),
-    ], string="Gemini Model",
-       config_parameter='ensa_hr.gemini_model',
-       default='gemini-flash-latest',
-       help="Choose the Gemini model to use")
-
-    openai_model = fields.Selection([
-        ('gpt-4o', 'GPT-4o (Latest, Best)'),
-        ('gpt-4o-mini', 'GPT-4o Mini (Fast, Cheap)'),
-        ('gpt-4', 'GPT-4 (Legacy)'),
-        ('gpt-4-turbo-preview', 'GPT-4 Turbo'),
-        ('gpt-3.5-turbo', 'GPT-3.5 Turbo'),
-    ], string="AI Model", 
-       config_parameter='ensa_hr.openai_model',
-       default='gpt-4o-mini',
-       help="Choose the OpenAI model to use")
+    # Hugging Face Configuration
        
     # Hugging Face Configuration
     huggingface_api_key = fields.Char(
@@ -61,14 +26,29 @@ class ResConfigSettings(models.TransientModel):
         help="Access Token from huggingface.co/settings/tokens"
     )
     huggingface_model = fields.Selection([
-        ('google/gemma-2-2b-it', 'Google Gemma 2 2B (Fast, Recommended)'),
-        ('Qwen/Qwen2.5-1.5B-Instruct', 'Qwen 2.5 1.5B (Lightweight)'),
-        ('mistralai/Mistral-7B-Instruct-v0.2', 'Mistral 7B (High Quality)'),
+        ('microsoft/Phi-3-mini-4k-instruct', 'Microsoft Phi-3 Mini 4k (Instruct)'),
+        # Legacy models (kept for compatibility)
+        ('google/gemma-2-2b-it', 'Google Gemma 2 2B (Deprecated)'),
+        ('Qwen/Qwen2.5-1.5B-Instruct', 'Qwen 2.5 1.5B (Deprecated)'),
+        ('mistralai/Mistral-7B-Instruct-v0.2', 'Mistral 7B (Deprecated)'),
     ], string="Hugging Face Model",
        config_parameter='ensa_hr.huggingface_model',
-       default="google/gemma-2-2b-it",
+       default="microsoft/Phi-3-mini-4k-instruct",
        help="Select a free Hugging Face model. All models work without credit card."
     )
+
+    # Bytez Configuration
+    bytez_api_key = fields.Char(
+        string="Bytez API Key",
+        config_parameter='ensa_hr.bytez_api_key',
+        help="Your Bytez API key"
+    )
+    bytez_model = fields.Selection([
+        ('Qwen/Qwen3-4B-Instruct-2507', 'Qwen 3 4B Instruct'),
+    ], string="Bytez Model",
+       config_parameter='ensa_hr.bytez_model',
+       default='Qwen/Qwen3-4B-Instruct-2507',
+       help="Select the Bytez model")
     
     enable_ai_features = fields.Boolean(
         string="Enable AI Features",
@@ -77,29 +57,20 @@ class ResConfigSettings(models.TransientModel):
         help="Enable AI-powered insights, predictions, and analysis"
     )
     
-    # Twilio WhatsApp Configuration
-    twilio_account_sid = fields.Char(
-        string="Twilio Account SID",
-        config_parameter='ensa_hr.twilio_account_sid',
-        help="Your Twilio Account SID"
-    )
-    twilio_auth_token = fields.Char(
-        string="Twilio Auth Token",
-        config_parameter='ensa_hr.twilio_auth_token',
-        help="Your Twilio Auth Token"
-    )
-    twilio_whatsapp_number = fields.Char(
-        string="WhatsApp Business Number",
-        config_parameter='ensa_hr.twilio_whatsapp_number',
-        default='whatsapp:+14155238886',
-        help="Your WhatsApp Business number (format: whatsapp:+1234567890)"
-    )
     
+    # WhatsApp Bot (handled by Node.js bridge)
     enable_whatsapp_bot = fields.Boolean(
         string="Enable WhatsApp Bot",
         config_parameter='ensa_hr.enable_whatsapp_bot',
         default=True,
-        help="Enable WhatsApp chatbot for employee self-service"
+        help="Enable WhatsApp chatbot (requires Node.js bridge)"
+    )
+    
+    # Test Field (Stored in system parameters)
+    test_whatsapp_number = fields.Char(
+        string="Test Phone Number", 
+        config_parameter='ensa_hr.test_whatsapp_number',
+        help="Format: +212612345678"
     )
     
     # Matching Engine Configuration
@@ -164,7 +135,7 @@ class ResConfigSettings(models.TransientModel):
         """Test AI Provider API connection"""
         self.ensure_one()
         
-        provider = self.ai_provider or 'openai'
+        provider = self.ai_provider or 'huggingface'
         
         try:
             ai_service = self.env['ensa.ai.service'].get_ai_service()
@@ -186,44 +157,5 @@ class ResConfigSettings(models.TransientModel):
                     'sticky': False,
                 }
             }
-        except Exception as e:
-            raise UserError(_("Connection failed: %s") % str(e))
-    
-    def action_test_whatsapp_connection(self):
-        """Test Twilio WhatsApp connection"""
-        self.ensure_one()
-        
-        if not all([self.twilio_account_sid, self.twilio_auth_token, self.twilio_whatsapp_number]):
-            raise UserError(_("Please complete all Twilio configuration fields."))
-        
-        try:
-            whatsapp_service = self.env['ensa.whatsapp.service'].get_whatsapp_service()
-            
-            # Try to get account info (this validates credentials) via direct API
-            import requests
-            url = f"https://api.twilio.com/2010-04-01/Accounts/{self.twilio_account_sid}.json"
-            response = requests.get(
-                url,
-                auth=(self.twilio_account_sid, self.twilio_auth_token),
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                account_data = response.json()
-                friendly_name = account_data.get('friendly_name', 'Twilio Account')
-                
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Connection Successful'),
-                        'message': f"Connected to Twilio account: {friendly_name}",
-                        'type': 'success',
-                        'sticky': False,
-                    }
-                }
-            else:
-                raise UserError(_("Twilio API error: %s") % response.text)
-                
         except Exception as e:
             raise UserError(_("Connection failed: %s") % str(e))
