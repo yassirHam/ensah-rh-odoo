@@ -65,7 +65,7 @@
     </record>
 
     <record id="employee_prof_Ahmed" model="hr.employee">
-        <field name="name">Prof. Mohammed Aziz</field>
+        <field name="name">Prof. El Marouani Mohamed</field>
         <field name="identification_number">MA234567</field>
         <field name="job_title">Professor - Civil Engineering</field>
         <field name="department_id" ref="dept_geenie_civil"/>

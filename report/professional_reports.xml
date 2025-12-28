@@ -8,11 +8,12 @@
             <t t-call="web.basic_layout">
                 <div class="certificate-page" style="min-height: 29.7cm; padding: 3cm;">
                     <!-- Certificate Header -->
-                    <div class="text-center" style="margin-bottom: 40px;">
-                        <img src="/ensa_hoceima_hr/static/img/ensah_logo.png" style="max-height: 100px;" alt="ENSAH Logo"/>
-                        <h2 style="color: #1e40af; margin-top: 20px; font-family: 'Georgia', serif;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
-                        <h3 style="color: #2c3e50; font-family: 'Georgia', serif;">École Nationale des Sciences Appliquées</h3>
-                        <h4 style="color: #6c757d; font-style: italic;">Al Hoceima - Maroc</h4>
+                    <div class="text-center" style="margin-bottom: 30px;">
+                        <img src="/ensa_hoceima_hr/static/description/t1.png" style="max-height: 120px;" alt="ENSAH Logo"/>
+                        <h2 style="color: #1e40af; margin-top: 15px; font-family: 'Georgia', serif; font-weight: bold; font-size: 20pt;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
+                        <h3 style="color: #2c3e50; font-family: 'Georgia', serif; letter-spacing: 1px; font-size: 16pt;">École Nationale des Sciences Appliquées</h3>
+                        <div style="height: 3px; width: 100px; background-color: #d97706; margin: 10px auto;"></div>
+                        <h4 style="color: #6c757d; font-style: italic; font-size: 12pt;">Al Hoceima - Maroc</h4>
                     </div>
                     
                     <!-- Certificate Title -->
@@ -25,18 +26,18 @@
                     </div>
                     
                     <!-- Certificate Body -->
-                    <div style="margin: 40px auto; max-width: 80%; font-size: 14pt; line-height: 1.8;">
-                        <p style="text-align: center; margin-bottom: 30px;">
+                    <div style="margin: 20px auto; max-width: 90%; font-size: 13pt; line-height: 1.5;">
+                        <p style="text-align: center; margin-bottom: 20px;">
                             La Direction de l'École Nationale des Sciences Appliquées d'Al Hoceima<br/>
                             certifie que
                         </p>
-                        <p style="text-align: center; font-size: 20pt; font-weight: bold; color: #1e40af; margin: 30px 0;">
+                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #1e40af; margin: 20px 0;">
                             <t t-esc="training.employee_id.name"/>
                         </p>
-                        <p style="text-align: center; margin: 30px 0;">
+                        <p style="text-align: center; margin: 20px 0;">
                             a suivi avec succès la formation intitulée :
                         </p>
-                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #2c3e50; margin: 30px 0;">
+                        <p style="text-align: center; font-size: 16pt; font-weight: bold; color: #2c3e50; margin: 20px 0;">
                             « <t t-esc="training.name"/> »
                         </p>
                         <div class="row" style="margin-top: 40px; text-align: center;">
@@ -85,30 +86,31 @@
             <t t-call="web.basic_layout">
                 <div class="certificate-page" style="min-height: 29.7cm; padding: 3cm;">
                     <!-- Header same as training -->
-                    <div class="text-center" style="margin-bottom: 40px;">
-                        <img src="/ensa_hoceima_hr/static/img/ensah_logo.png" style="max-height: 100px;" alt="ENSAH Logo"/>
-                        <h2 style="color: #1e40af; margin-top: 20px;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
-                        <h3 style="color: #2c3e50;">École Nationale des Sciences Appliquées</h3>
-                        <h4 style="color: #6c757d; font-style: italic;">Al Hoceima - Maroc</h4>
+                    <div class="text-center" style="margin-bottom: 30px;">
+                        <img src="/ensa_hoceima_hr/static/description/t1.png" style="max-height: 120px;" alt="ENSAH Logo"/>
+                        <h2 style="color: #1e40af; margin-top: 15px; font-family: 'Georgia', serif; font-weight: bold; font-size: 20pt;">المدرسة الوطنية للعلوم التطبيقية بالحسيمة</h2>
+                        <h3 style="color: #2c3e50; font-family: 'Georgia', serif; letter-spacing: 1px; font-size: 16pt;">École Nationale des Sciences Appliquées</h3>
+                        <div style="height: 3px; width: 100px; background-color: #d97706; margin: 10px auto;"></div>
+                        <h4 style="color: #6c757d; font-style: italic; font-size: 12pt;">Al Hoceima - Maroc</h4>
                     </div>
                     
                     <div class="text-center" style="margin: 50px 0 30px 0;">
                         <h1 style="color: #d97706; font-size: 36pt;">Attestation de Stage</h1>
                     </div>
                     
-                    <div style="margin: 40px auto; max-width: 80%; font-size: 14pt; line-height: 1.8;">
-                        <p style="text-align: center; margin-bottom: 30px;">
+                    <div style="margin: 20px auto; max-width: 90%; font-size: 13pt; line-height: 1.5;">
+                        <p style="text-align: center; margin-bottom: 20px;">
                             Le Directeur de l'École Nationale des Sciences Appliquées d'Al Hoceima<br/>
                             atteste que l'étudiant(e)
                         </p>
-                        <p style="text-align: center; font-size: 20pt; font-weight: bold; color: #1e40af; margin: 30px 0;">
+                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #1e40af; margin: 20px 0;">
                             <t t-esc="internship.student_name"/>
                         </p>
-                        <p style="text-align: center; margin: 30px 0;">
+                        <p style="text-align: center; margin: 20px 0;">
                             a effectué un stage de <strong><t t-esc="internship.internship_type"/></strong><br/>
                             au sein de l'entreprise
                         </p>
-                        <p style="text-align: center; font-size: 18pt; font-weight: bold; color: #059669; margin: 30px 0;">
+                        <p style="text-align: center; font-size: 16pt; font-weight: bold; color: #059669; margin: 20px 0;">
                             <t t-esc="internship.host_company"/>
                         </p>
                         <div class="row" style="margin-top: 40px; text-align: center;">
@@ -134,9 +136,17 @@
                 </h2>
                 
                 <!-- Project Header Card -->
-                <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
-                    <h3 style="color: white; margin: 0 0 10px 0;"><t t-esc="project.title"/></h3>
-                    <p style="margin: 0; font-size: 12pt; opacity: 0.9;"><t t-esc="project.name"/></p>
+                <div style="background-color: #1e3a8a; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #60a5fa 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 35px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                             <span style="background: rgba(255,255,255,0.2); font-size: 10px; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">Project Title</span>
+                             <h3 style="color: white; margin: 10px 0 5px 0; font-size: 24pt; font-weight: 700;"><t t-esc="project.title"/></h3>
+                             <p style="margin: 0; font-size: 14pt; opacity: 0.9; font-weight: 300;"><t t-esc="project.name"/></p>
+                        </div>
+                        <div style="text-align: right;">
+                             <img src="/ensa_hoceima_hr/static/description/icon.png" style="height: 60px; opacity: 0.8; filter: brightness(0) invert(1);" />
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Project Details Grid -->
@@ -220,19 +230,23 @@
                 </h2>
                 
                 <!--Employee Header -->
-                <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
-                    <div class="row align-items-center">
+                <div style="background-color: #4f46e5; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 35px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
+                    <!-- Decorative Circle -->
+                    <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                    
+                    <div class="row align-items-center" style="position: relative; z-index: 1;">
                         <div class="col-8">
-                            <h3 style="color: white; margin: 0;"><t t-esc="evaluation.employee_id.name"/></h3>
-                            <p style="margin: 5px 0 0 0; opacity: 0.9;">
-                                <t t-esc="evaluation.employee_id.job_title"/> - <t t-esc="evaluation.employee_id.department_id.name"/>
+                            <span style="background: rgba(255,255,255,0.2); font-size: 10px; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">Employee Evaluation</span>
+                            <h3 style="color: white; margin: 10px 0 0 0; font-size: 24pt; font-weight: bold;"><t t-esc="evaluation.employee_id.name"/></h3>
+                            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 12pt;">
+                                <t t-esc="evaluation.employee_id.job_title"/> <span style="opacity: 0.6;">|</span> <t t-esc="evaluation.employee_id.department_id.name"/>
                             </p>
                         </div>
                         <div class="col-4 text-right">
-                            <div style="background: white; color: #1e40af; padding: 15px; border-radius: 8px; display: inline-block;">
-                                <div style="font-size: 10pt;">Score Global</div>
-                                <div style="font-size: 28pt; font-weight: bold; line-height: 1;"><t t-esc="'%.1f' % evaluation.overall_score"/></div>
-                                <div style="font-size: 10pt;">/10</div>
+                            <div style="background: rgba(255,255,255,0.95); color: #4f46e5; padding: 15px 25px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                                <div style="font-size: 9pt; text-transform: uppercase; font-weight: 600; color: #6b7280;">Score Global</div>
+                                <div style="font-size: 32pt; font-weight: 800; line-height: 1;"><t t-esc="'%.1f' % evaluation.overall_score"/></div>
+                                <div style="font-size: 10pt; color: #6b7280;">/10</div>
                             </div>
                         </div>
                     </div>

@@ -9,7 +9,6 @@ from . import internship_checkin
 from . import res_config_settings
 from . import ai_assistant
 
-# Import services
 from ..services import ai_service
 
 from ..services import matching_engine
