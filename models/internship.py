@@ -208,7 +208,8 @@ class StudentInternship(models.Model):
         self.ensure_one()
         
         try:
-            if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_ai_features', 'True') != 'True':
+            # FORCE DISABLE AI FEATURES
+            if True: 
                 return
             
             ai_service = self.env['ensa.ai.service'].get_ai_service()

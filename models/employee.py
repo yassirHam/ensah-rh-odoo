@@ -30,6 +30,7 @@ class HrEmployee(models.Model):
     
     internship_ids = fields.One2many('ensa.internship', 'supervisor_id', string="Supervised Internships")
     internship_count = fields.Integer(compute='_compute_internship_count', string="Internships Count")
+    evaluation_count = fields.Integer(compute='_compute_evaluation_count', string="Evaluations Count")
 
 
 
@@ -75,6 +76,11 @@ class HrEmployee(models.Model):
     def _compute_internship_count(self):
         for employee in self:
             employee.internship_count = len(employee.internship_ids)
+
+    @api.depends('evaluation_ids')
+    def _compute_evaluation_count(self):
+        for employee in self:
+            employee.evaluation_count = len(employee.evaluation_ids)
 
     @api.depends('evaluation_ids.overall_score', 'evaluation_ids.date', 'evaluation_ids.state')
     def _compute_performance_metrics(self):

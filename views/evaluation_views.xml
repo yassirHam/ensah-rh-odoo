@@ -117,6 +117,7 @@
                             </group>
                         </page>
                         
+                        <!-- AI Insights Page - Disabled per request
                         <page string="AI Insights" invisible="state == 'draft'">
                             <div class="alert alert-primary d-flex align-items-start">
                                 <i class="fa fa-robot fa-2x mr-3 mt-1 text-info"/>
@@ -126,6 +127,7 @@
                                 </div>
                             </div>
                         </page>
+                        -->
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

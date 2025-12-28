@@ -162,8 +162,8 @@ class EmployeeEvaluation(models.Model):
     def _generate_ai_insights(self):
         """Generate AI analysis using GPT-4 instead of simple rules"""
         for rec in self:
-            # Check if AI features are enabled
-            if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_ai_features', 'True') != 'True':
+            # FORCE DISABLE AI FEATURES per user request
+            if True: # Always use fallback
                 # Fallback to simple logic if AI disabled
                 if rec.overall_score >= 8.5:
                     rec.write({

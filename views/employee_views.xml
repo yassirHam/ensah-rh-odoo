@@ -35,8 +35,7 @@
                             class="btn-info" icon="fa-laptop"/>
                     <field name="last_evaluation_date" invisible="1"/>
                     <button name="action_view_evaluations" type="object" string="View Evaluations" 
-                            class="btn-success" icon="fa-star" 
-                            invisible="last_evaluation_date and last_evaluation_date >= context_today()"/>
+                            class="btn-success" icon="fa-star" />
                 </header>
             </xpath>
             
@@ -46,6 +45,9 @@
                 </button>
                 <button name="action_view_internships" type="object" class="oe_stat_button" icon="fa-id-badge" invisible="internship_count == 0">
                     <field name="internship_count" widget="statinfo" string="Internships"/>
+                </button>
+                <button name="action_view_evaluations" type="object" class="oe_stat_button" icon="fa-star">
+                    <field name="evaluation_count" widget="statinfo" string="Evaluations"/>
                 </button>
             </xpath>
             
