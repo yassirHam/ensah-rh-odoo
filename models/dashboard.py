@@ -46,14 +46,18 @@ class HRDashboard(models.TransientModel):
     
     @api.model
     def get_dashboard_data(self):
-        """Simplified dashboard data fetcher with proper error handling"""
+        """Comprehensive dashboard data fetcher with full module coverage"""
         try:
             dashboard_data = {
                 'employee_stats': self._get_employee_stats(),
                 'evaluation_stats': self._get_evaluation_stats(),
                 'equipment_stats': self._get_equipment_stats(),
                 'training_stats': self._get_training_stats(),
+                'internship_stats': self._get_internship_stats(),
+                'project_stats': self._get_project_stats(),
                 'department_distribution': self._get_department_distribution(),
+                'performance_trends': self._get_performance_trends(),
+                'upcoming_events': self._get_upcoming_events(),
             }
             
             # Add AI-powered insights if enabled
@@ -345,3 +349,124 @@ Format each insight as: <div class="insight"><strong>Title</strong>: Description
         # This is a simplified calculation - in production, track actual departures
         # For now, return a placeholder
         return 10.5  # 10.5% placeholder
+    
+    # ============ NEW COMPREHENSIVE DATA METHODS ============
+    
+    def _get_internship_stats(self):
+        """Get comprehensive internship statistics"""
+        all_internships = self.env['ensa.internship'].search([])
+        today = fields.Date.today()
+        
+        return {
+            'total': len(all_internships),
+            'active': self.env['ensa.internship'].search_count([('status', '=', 'in_progress')]),
+            'completed': self.env['ensa.internship'].search_count([('status', '=', 'completed')]),
+            'planned': self.env['ensa.internship'].search_count([('status', '=', 'planned')]),
+            'by_type': self._get_count_by_field(all_internships, 'internship_type'),
+            'by_risk_level': self._get_count_by_field(
+                all_internships.filtered(lambda i: i.status == 'in_progress'), 
+                'risk_level'
+            ),
+            'avg_duration': round(sum(all_internships.mapped('duration')) / len(all_internships), 1) if all_internships else 0,
+            'avg_score': round(sum(all_internships.filtered('report_score').mapped('report_score')) / 
+                             len(all_internships.filtered('report_score')), 1) if all_internships.filtered('report_score') else 0,
+            'ending_soon': self.env['ensa.internship'].search_count([
+                ('end_date', '>=', today),
+                ('end_date', '<=', today + timedelta(days=30)),
+                ('status', '=', 'in_progress')
+            ])
+        }
+    
+    def _get_project_stats(self):
+        """Get student project statistics"""
+        all_projects = self.env['ensa.student.project'].search([])
+        
+        return {
+            'total': len(all_projects),
+            'active': self.env['ensa.student.project'].search_count([('status', '=', 'in_progress')]),
+            'completed': self.env['ensa.student.project'].search_count([('status', '=', 'completed')]),
+            'planned': self.env['ensa.student.project'].search_count([('status', '=', 'planning')]), # Fixed status key 'planning'
+            'by_domain': self._get_count_by_field(all_projects, 'domain'), # Changed from project_type to domain
+            'avg_budget': round(sum(all_projects.mapped('budget')) / len(all_projects), 1) if all_projects else 0, # Replaced team_size with budget
+        }
+    
+    def _get_performance_trends(self):
+        """Get performance trend analysis across the organization"""
+        employees = self.env['hr.employee'].search([('active', '=', True)])
+        
+        # Count employees by performance trend
+        improving = employees.filtered(lambda e: e.performance_trend == 'improving')
+        declining = employees.filtered(lambda e: e.performance_trend == 'declining')
+        stable = employees.filtered(lambda e: e.performance_trend == 'stable')
+        
+        # Get recent evaluations (last 90 days)
+        recent_evals = self.env['ensa.evaluation'].search([
+            ('date', '>=', fields.Date.today() - timedelta(days=90)),
+            ('state', '=', 'completed')
+        ])
+        
+        return {
+            'improving_count': len(improving),
+            'declining_count': len(declining),
+            'stable_count': len(stable),
+            'recent_evaluations': len(recent_evals),
+            'avg_recent_score': round(sum(recent_evals.mapped('overall_score')) / len(recent_evals), 1) if recent_evals else 0,
+            'top_performers': self._get_top_performers(5),
+            'needs_attention': self._get_employees_needing_attention(5)
+        }
+    
+    def _get_upcoming_events(self):
+        """Get all upcoming deadlines and events"""
+        today = fields.Date.today()
+        next_30_days = today + timedelta(days=30)
+        
+        return {
+            'trainings_starting': self.env['ensa.training'].search_count([
+                ('start_date', '>=', today),
+                ('start_date', '<=', next_30_days),
+                ('status', '=', 'planned')
+            ]),
+            'internships_ending': self.env['ensa.internship'].search_count([
+                ('end_date', '>=', today),
+                ('end_date', '<=', next_30_days),
+                ('status', '=', 'in_progress')
+            ]),
+            'projects_due': self.env['ensa.student.project'].search_count([
+                ('end_date', '>=', today),
+                ('end_date', '<=', next_30_days),
+                ('status', '=', 'in_progress')
+            ]),
+            'equipment_warranties_expiring': self.env['ensa.equipment'].search_count([
+                ('warranty_expiry', '>=', today),
+                ('warranty_expiry', '<=', next_30_days)
+            ])
+        }
+    
+    def _get_top_performers(self, limit=5):
+        """Get list of top performing employees"""
+        employees = self.env['hr.employee'].search([
+            ('active', '=', True),
+            ('avg_performance_score', '>', 0)
+        ], order='avg_performance_score desc', limit=limit)
+        
+        return [{
+            'name': emp.name,
+            'department': emp.department_id.name if emp.department_id else 'N/A',
+            'score': round(emp.avg_performance_score, 1)
+        } for emp in employees]
+    
+    def _get_employees_needing_attention(self, limit=5):
+        """Get employees with declining performance or low scores"""
+        employees = self.env['hr.employee'].search([
+            ('active', '=', True),
+            '|',
+            ('performance_trend', '=', 'declining'),
+            ('avg_performance_score', '<', 6.0)
+        ], order='avg_performance_score asc', limit=limit)
+        
+        return [{
+            'name': emp.name,
+            'department': emp.department_id.name if emp.department_id else 'N/A',
+            'score': round(emp.avg_performance_score, 1),
+            'trend': emp.performance_trend
+        } for emp in employees]
