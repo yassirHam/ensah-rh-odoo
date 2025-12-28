@@ -22,8 +22,6 @@ access_ensa_internship_checkin_user,ensa.internship.checkin.user,model_ensa_inte
 access_ensa_internship_checkin_officer,ensa.internship.checkin.officer,model_ensa_internship_checkin,hr.group_hr_user,1,1,1,1
 access_ensa_internship_checkin_manager,ensa.internship.checkin.manager,model_ensa_internship_checkin,hr.group_hr_manager,1,1,1,1
 access_ensa_ai_service_user,ensa.ai.service.user,model_ensa_ai_service,base.group_user,1,0,0,0
-access_ensa_matching_engine_user,ensa.matching.engine.user,model_ensa_matching_engine,base.group_user,1,0,0,0
-access_ensa_document_generator_user,ensa.document.generator.user,model_ensa_document_generator,base.group_user,1,0,0,0
 access_ensa_ai_assistant_user,ensa.ai.assistant.user,model_ensa_ai_assistant,base.group_user,1,1,1,0
 access_ensa_ai_assistant_officer,ensa.ai.assistant.officer,model_ensa_ai_assistant,hr.group_hr_user,1,1,1,1
 access_ensa_ai_assistant_manager,ensa.ai.assistant.manager,model_ensa_ai_assistant,hr.group_hr_manager,1,1,1,1

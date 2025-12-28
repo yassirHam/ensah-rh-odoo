@@ -149,56 +149,57 @@ class StudentInternship(models.Model):
             else:
                 internship.risk_level = 'low'
     
-    def calculate_match_score(self, student_data=None):
-        """
-        Calculate match score between student and internship
-        Can be called with student_data dict or uses internship's own student data
-        """
-        self.ensure_one()
-        
-        # Check if smart matching is enabled
-        if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_smart_matching', 'True') != 'True':
-            return
-        
-        try:
-            matching_engine = self.env['ensa.matching.engine'].get_matching_engine()
-            
-            # Prepare student data
-            if not student_data:
-                student_skills_list = [s.strip() for s in (self.student_skills or '').split(',') if s.strip()]
-                student_data = {
-                    'skills': student_skills_list,
-                    'interests': self.student_interests or '',
-                    'avg_score': 7.0,  # Default if not provided
-                    'level': self.level or ''
-                }
-            
-            # Prepare internship data
-            required_skills_list = [s.strip() for s in (self.required_skills or '').split(',') if s.strip()]
-            internship_data = {
-                'required_skills': required_skills_list,
-                'description': self.description or '',
-                'type': self.internship_type or '',
-                'required_level': self.required_level or ''
-            }
-            
-            # Calculate match
-            match_result = matching_engine.match_student_to_internship(student_data, internship_data)
-            
-            # Update fields
-            self.write({
-                'match_score': match_result.get('total_score', 0),
-                'match_recommendation': match_result.get('recommendation', ''),
-                'success_probability': matching_engine.predict_success_probability(
-                    student_data,
-                    internship_data,
-                    match_result.get('total_score', 0)
-                )
-            })
-            
-        except Exception as e:
-            import logging
-            logging.getLogger(__name__).error(f"Match calculation failed: {str(e)}")
+    # def calculate_match_score(self, student_data=None):
+    #     """
+    #     Calculate match score between student and internship
+    #     Can be called with student_data dict or uses internship's own student data
+    #     """
+    #     self.ensure_one()
+    #     
+    #     # Check if smart matching is enabled
+    #     if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_smart_matching', 'True') != 'True':
+    #         return
+    #     
+    #     try:
+    #         matching_engine = self.env['ensa.matching.engine'].get_matching_engine()
+    #         
+    #         # Prepare student data
+    #         if not student_data:
+    #             student_skills_list = [s.strip() for s in (self.student_skills or '').split(',') if s.strip()]
+    #             student_data = {
+    #                 'skills': student_skills_list,
+    #                 'interests': self.student_interests or '',
+    #                 'avg_score': 7.0,  # Default if not provided
+    #                 'level': self.level or ''
+    #             }
+    #         
+    #         # Prepare internship data
+    #         required_skills_list = [s.strip() for s in (self.required_skills or '').split(',') if s.strip()]
+    #         internship_data = {
+    #             'required_skills': required_skills_list,
+    #             'description': self.description or '',
+    #             'type': self.internship_type or '',
+    #             'required_level': self.required_level or ''
+    #         }
+    #         
+    #         # Calculate match
+    #         match_result = matching_engine.match_student_to_internship(student_data, internship_data)
+    #         
+    #         # Update fields
+    #         self.write({
+    #             'match_score': match_result.get('total_score', 0),
+    #             'match_recommendation': match_result.get('recommendation', ''),
+    #             'success_probability': matching_engine.predict_success_probability(
+    #                 student_data,
+    #                 internship_data,
+    #                 match_result.get('total_score', 0)
+    #             )
+    #         })
+    #         
+    #     except Exception as e:
+    #         import logging
+    #         logging.getLogger(__name__).error(f"Match calculation failed: {str(e)}")
+    
     
 
     

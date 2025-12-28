@@ -62,28 +62,6 @@ class ResConfigSettings(models.TransientModel):
     
 
     
-    # Matching Engine Configuration
-    enable_smart_matching = fields.Boolean(
-        string="Enable Smart Matching",
-        config_parameter='ensa_hr.enable_smart_matching',
-        default=True,
-        help="Enable AI-powered internship and project matching"
-    )
-    
-    matching_threshold = fields.Integer(
-        string="Minimum Match Score",
-        config_parameter='ensa_hr.matching_threshold',
-        default=50,
-        help="Minimum match score (0-100) to show suggestions"
-    )
-    
-    # Document Generation Configuration
-    enable_auto_documents = fields.Boolean(
-        string="Enable Auto-Document Generation",
-        config_parameter='ensa_hr.enable_auto_documents',
-        default=True,
-        help="Automatically generate PDFs for evaluations and certificates"
-    )
     
     # Feature Flags
     enable_turnover_prediction = fields.Boolean(
