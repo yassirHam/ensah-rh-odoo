@@ -42,8 +42,8 @@
                                     <div class="info-item">
                                         <span class="info-label">Contact:</span>
                                         <span class="info-value">
-                                            <t t-field="employee.work_phone"/><br/>
-                                            <t t-field="employee.work_email"/>
+                                            <span t-field="employee.work_phone"/><br/>
+                                            <span t-field="employee.work_email"/>
                                         </span>
                                     </div>
                                     <div class="info-item">
@@ -62,7 +62,7 @@
                                     </div>
                                     <div class="info-item">
                                         <span class="info-label">Contract Type:</span>
-                                        <span class="info-value" t-field="employee.contract_id.contract_type"/>
+                                        <span class="info-value" t-field="employee.contract_id.contract_type_id.name"/>
                                     </div>
                                     <div class="info-item">
                                         <span class="info-label">Working Hours:</span>
@@ -86,7 +86,7 @@
                                                     <div class="row no-gutters align-items-center">
                                                         <div class="col mr-2">
                                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Avg. Score</div>
-                                                            <div class="h5 mb-0 font-weight-bold text-gray-800" t-esc="'%.1f' % employee.avg_evaluation_score"/>
+                                                            <div class="h5 mb-0 font-weight-bold text-gray-800" t-esc="'%.1f' % employee.avg_performance_score"/>
                                                         </div>
                                                         <div class="col-auto">
                                                             <i class="fas fa-star fa-2x text-gray-300"></i>
@@ -126,13 +126,11 @@
                                     <div class="skill-category">
                                         <h5>Technical Skills</h5>
                                         <div class="skill-list">
-                                            <t t-foreach="employee.technical_skills.splitlines()" t-as="skill">
-                                                <div class="skill-item">
-                                                    <div class="skill-name" t-esc="skill"/>
-                                                    <div class="skill-level">
-                                                        <span t-esc="get_skill_level(skill)"/>
-                                                    </div>
-                                                </div>
+                                            <t t-if="employee.technical_skills">
+                                                <p style="white-space: pre-wrap;" t-field="employee.technical_skills"/>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-muted">No technical skills listed</p>
                                             </t>
                                         </div>
                                     </div>
@@ -140,13 +138,11 @@
                                     <div class="skill-category">
                                         <h5>Soft Skills</h5>
                                         <div class="skill-list">
-                                            <t t-foreach="employee.soft_skills.splitlines()" t-as="skill">
-                                                <div class="skill-item">
-                                                    <div class="skill-name" t-esc="skill"/>
-                                                    <div class="skill-level">
-                                                        <span t-esc="get_skill_level(skill)"/>
-                                                    </div>
-                                                </div>
+                                            <t t-if="employee.soft_skills">
+                                                <p style="white-space: pre-wrap;" t-field="employee.soft_skills"/>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-muted">No soft skills listed</p>
                                             </t>
                                         </div>
                                     </div>
@@ -154,13 +150,11 @@
                                     <div class="skill-category">
                                         <h5>Languages</h5>
                                         <div class="skill-list">
-                                            <t t-foreach="employee.language_skills.splitlines()" t-as="skill">
-                                                <div class="skill-item">
-                                                    <div class="skill-name" t-esc="skill"/>
-                                                    <div class="skill-level">
-                                                        <span t-esc="get_skill_level(skill)"/>
-                                                    </div>
-                                                </div>
+                                            <t t-if="employee.language_skills">
+                                                <p style="white-space: pre-wrap;" t-field="employee.language_skills"/>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-muted">No language skills listed</p>
                                             </t>
                                         </div>
                                     </div>

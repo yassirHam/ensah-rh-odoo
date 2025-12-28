@@ -140,6 +140,41 @@ class HrEmployee(models.Model):
             if employee.identification_number and len(employee.identification_number) != 8:
                 raise ValidationError(_("National ID must be 8 characters long"))
 
+    def get_skill_info(self, skill_line):
+        """Parse skill line to extract name and level.
+           Expected format: 'Skill Name: Level' or just 'Skill Name'
+        """
+        if not skill_line:
+            return {'name': '', 'level': ''}
+            
+        parts = skill_line.split(':', 1)
+        if len(parts) > 1:
+            return {
+                'name': parts[0].strip(),
+                'level': parts[1].strip()
+            }
+        return {
+            'name': skill_line.strip(),
+            'level': 'Basic'  # Default level if not specified
+        }
+
+    def get_skills_list(self, field_name):
+        """Returns parsed list of skills for the given field name."""
+        if not field_name:
+            return []
+            
+        field_value = self[field_name]
+        if not field_value:
+            return []
+            
+        skills_data = []
+        # splitlines() on a string is safe. field_value is ensured to be truthy (so likely a non-empty string)
+        for line in str(field_value).splitlines():
+            line = line.strip()
+            if line:
+                skills_data.append(self.get_skill_info(line))
+        return skills_data
+
     # Smart buttons
     def action_view_equipment(self):
         return {
