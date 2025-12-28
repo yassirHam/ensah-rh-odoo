@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from odoo.http import request
+from datetime import timedelta
+
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -18,8 +20,8 @@ class HRDashboard(models.TransientModel):
     
     # HTML Content Fields
     ai_insights_html = fields.Html(string="AI Insights", readonly=True, default="<p>Click Refresh to load AI insights...</p>")
-    turnover_risks_html = fields.Html(string="Turnover Risks", readonly=True)
-    anomalies_html = fields.Html(string="Anomalies", readonly=True)
+    upcoming_internships_html = fields.Html(string="Upcoming Internships", readonly=True)
+    skill_distribution_html = fields.Html(string="Skill Distribution", readonly=True)
     predictions_html = fields.Html(string="Predictions", readonly=True)
     suggestions_html = fields.Html(string="Suggestions", readonly=True)
     
@@ -56,10 +58,9 @@ class HRDashboard(models.TransientModel):
             
             # Add AI-powered insights if enabled
             if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_ai_features', 'True') == 'True':
-                # AI Insights REMOVED per user request
-                # dashboard_data['ai_insights'] = ... 
-                dashboard_data['turnover_risks'] = self._get_turnover_predictions()
-                dashboard_data['anomalies'] = self._detect_anomalies(dashboard_data)
+                 # AI Insights REMOVED per user request
+                 # dashboard_data['ai_insights'] = ... 
+                 pass
             
             return dashboard_data
         except Exception as e:
@@ -71,8 +72,10 @@ class HRDashboard(models.TransientModel):
         data = self.get_dashboard_data()
         
         # Format HTML for lists
-        turnover_html = self._format_turnover_list(data.get('turnover_risks', []))
-        anomalies_html = self._format_anomalies_list(data.get('anomalies', []))
+        
+        # Format HTML for lists
+        internship_html = self._format_internship_list(self._get_upcoming_internships())
+        skills_html = self._format_skill_distribution(data.get('employee_stats', {}).get('by_skill_level', {}))
         
         self.write({
             'total_employees': data.get('employee_stats', {}).get('total', 0),
@@ -80,8 +83,8 @@ class HRDashboard(models.TransientModel):
             'active_trainings': data.get('training_stats', {}).get('active', 0),  # Corrected from 'upcoming'
             'total_evaluations': data.get('evaluation_stats', {}).get('total', 0),
             'ai_insights_html': data.get('ai_insights', ''),
-            'turnover_risks_html': turnover_html,
-            'anomalies_html': anomalies_html
+            'upcoming_internships_html': internship_html,
+            'skill_distribution_html': skills_html
         })
         
         # Keep the wizard open
@@ -93,33 +96,60 @@ class HRDashboard(models.TransientModel):
             'target': 'current',
         }
 
-    def _format_turnover_list(self, risks):
-        if not risks:
-            return "<p class='text-muted'>No high-risk employees detected.</p>"
+    def _get_upcoming_internships(self):
+        """Fetch internships ending in the next 30 days"""
+        today = fields.Date.today()
+        next_month = today + timedelta(days=30)
+        return self.env['ensa.internship'].search([
+            ('end_date', '>=', today),
+            ('end_date', '<=', next_month),
+            ('status', '=', 'in_progress')
+        ], order='end_date asc', limit=5)
+
+    def _format_internship_list(self, internships):
+        if not internships:
+            return "<p class='text-muted'>No internships ending soon.</p>"
         
-        html = "<ul class='list-group list-group-flush'>"
-        for risk in risks:
+        html = """<div class='table-responsive'><table class='table table-sm table-hover'>
+                <thead><tr><th>Student</th><th>Company</th><th>End Date</th></tr></thead>
+                <tbody>"""
+        
+        for inter in internships:
             html += f"""
-            <li class='list-group-item d-flex justify-content-between align-items-center' style='padding: 12px 15px;'>
-                <span class='font-weight-bold' style='color: #2c3e50;'>{risk['employee_name']}</span>
-                <span class='badge badge-danger badge-pill' style='padding: 6px 10px;'>{risk['risk_score']}%</span>
-            </li>"""
-        html += "</ul>"
+            <tr>
+                <td>{inter.student_name}</td>
+                <td>{inter.host_company}</td>
+                <td>{inter.end_date}</td>
+            </tr>"""
+        html += "</tbody></table></div>"
         return html
 
-    def _format_anomalies_list(self, anomalies):
-        if not anomalies:
-            return "<p class='text-muted'>No anomalies detected.</p>"
+    def _format_skill_distribution(self, stats):
+        if not stats:
+            return "<p class='text-muted'>No skill data available.</p>"
             
-        html = "<div class='list-group'>"
-        for item in anomalies:
-            html += f"""
-            <div class='list-group-item list-group-item-action flex-column align-items-start'>
-                <div class='d-flex w-100 justify-content-between'>
-                    <h6 class='mb-1 text-warning'><i class='fa fa-exclamation-circle'/> {item['title']}</h6>
-                </div>
-                <p class='mb-1 small'>{item['description']}</p>
-            </div>"""
+        total = sum(stats.values())
+        html = "<div class='mt-2'>"
+        
+        # Order: Basic -> Expert
+        order = ['basic', 'intermediate', 'advanced', 'expert']
+        colors = {'basic': 'bg-secondary', 'intermediate': 'bg-info', 'advanced': 'bg-primary', 'expert': 'bg-success'}
+        labels = {'basic': 'Basic', 'intermediate': 'Intermediate', 'advanced': 'Advanced', 'expert': 'Expert'}
+        
+        for level in order:
+            count = stats.get(level, 0)
+            if count > 0:
+                pct = int((count / total) * 100)
+                html += f"""
+                <div class='mb-2'>
+                    <div class='d-flex justify-content-between small font-weight-bold'>
+                        <span>{labels[level]}</span>
+                        <span>{count} ({pct}%)</span>
+                    </div>
+                    <div class='progress' style='height: 8px;'>
+                        <div class='progress-bar {colors[level]}' role='progressbar' style='width: {pct}%' aria-valuenow='{pct}' aria-valuemin='0' aria-valuemax='100'></div>
+                    </div>
+                </div>"""
         html += "</div>"
         return html
     
@@ -300,112 +330,7 @@ Format each insight as: <div class="insight"><strong>Title</strong>: Description
             _logger.error(f"AI insights error: {str(e)}")
             return "<p>AI insights temporarily unavailable</p>"
     
-    def _get_turnover_predictions(self):
-        """Predict which employees are at risk of leaving"""
-        try:
-            if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_turnover_prediction', 'True') != 'True':
-                return []
-            
-            ai_service = self.env['ensa.ai.service'].get_ai_service()
-            # Only analyze ENSA employees for risk
-            employees = self.env['hr.employee'].search([
-                ('active', '=', True),
-                ('company_id.name', 'ilike', 'ENSA')
-            ])
-            
-            _logger.info(f"Dashboard: Found {len(employees)} ENSA employees for turnover analysis")
-            
-            if not employees:
-                # Fallback to all employees if ENSA filter yields nothing
-                employees = self.env['hr.employee'].search([('active', '=', True)])
-                _logger.info("Dashboard: No ENSA employees found, falling back to all active employees")
 
-            batch_data = []
-            employee_map = {}
-            
-            for emp in employees[:20]:
-                evaluations = emp.evaluation_ids.sorted('date', reverse=True)[:3]
-                recent_scores = [e.overall_score for e in evaluations] or [0.0]
-                
-                batch_data.append({
-                    'name': emp.name,
-                    'performance': emp.skill_level or 'intermediate',
-                    'recent_scores': recent_scores,
-                    'last_eval_days': (fields.Date.today() - emp.last_evaluation_date).days if emp.last_evaluation_date else 999,
-                    'trainings': len(emp.training_ids),
-                    'tenure': self._calculate_employee_tenure(emp)
-                })
-                employee_map[emp.name] = emp.id
-            
-            _logger.info(f"Dashboard: Sending batch turnover request for {len(batch_data)} employees")
-            # SINGLE BATCH AI CALL (Fast)
-            risk_results = ai_service.batch_analyze_turnover(batch_data)
-            _logger.info(f"Dashboard: Received {len(risk_results)} risk results from AI")
-            
-            at_risk_employees = []
-            for result in risk_results:
-                if result.get('risk_score', 0) > 30:  # Lowered threshold further for testing
-                    at_risk_employees.append({
-                        'employee_id': employee_map.get(result['employee_name']),
-                        'employee_name': result['employee_name'],
-                        'risk_score': result['risk_score'],
-                        'risk_level': result.get('risk_level', 'low')
-                    })
-            
-            return sorted(at_risk_employees, key=lambda x: x['risk_score'], reverse=True)
-            
-        except Exception as e:
-            _logger.error(f"Turnover prediction error: {str(e)}")
-            return []
-    
-    def _detect_anomalies(self, dashboard_data):
-        """Detect anomalies in HR metrics using AI"""
-        try:
-            ai_service = self.env['ensa.ai.service'].get_ai_service()
-            
-            # Feed real data breakdown for better reasoning
-            emp_stats = dashboard_data.get('employee_stats', {})
-            training_stats = dashboard_data.get('training_stats', {})
-            
-            data_points = [
-                {
-                    'metric': 'Workforce Balance',
-                    'total_employees': emp_stats.get('total', 0),
-                    'avg_performance': dashboard_data.get('evaluation_stats', {}).get('avg_score', 0),
-                    'active_trainings': training_stats.get('active', 0)
-                },
-                {
-                    'metric': 'Equipment & Logistics',
-                    'total_assets': dashboard_data.get('equipment_stats', {}).get('total', 0),
-                    'unassigned_stock': dashboard_data.get('equipment_stats', {}).get('by_status', {}).get('available', 0)
-                }
-            ]
-            
-            # Stronger prompt for anomalies to ensure content
-            prompt = f"""Analyze these HR department metrics: {json.dumps(data_points)}
-Identify 2-3 "Anomalies" or "Points of Interest". 
-Even if the data looks good, point out areas where the balance could be improved (e.g. low training ratio, equipment in stock not being used).
-Format as JSON list: [{{"title": "...", "description": "...", "severity": "low/medium"}}]"""
-            
-            _logger.info(f"Dashboard: Sending anomaly detection request with {len(data_points)} data points")
-            response = ai_service.generate_text(prompt, max_tokens=600, temperature=0.5)
-            _logger.info(f"Dashboard: Raw anomaly text: {response[:100]}...")
-            
-            try:
-                # Direct JSON parse of the custom prompt result
-                clean_json = response.strip()
-                if clean_json.startswith('```json'): clean_json = clean_json[7:]
-                if clean_json.endswith('```'): clean_json = clean_json[:-3]
-                results = json.loads(clean_json)
-                _logger.info(f"Dashboard: Parsed {len(results)} anomalies")
-                return results[:5]
-            except Exception as e:
-                _logger.error(f"Dashboard: Anomaly JSON parsing error: {str(e)}")
-                return []
-            
-        except Exception as e:
-            _logger.error(f"Anomaly detection error: {str(e)}")
-            return []
     
     def _calculate_employee_tenure(self, employee):
         """Calculate tenure for a single employee"""

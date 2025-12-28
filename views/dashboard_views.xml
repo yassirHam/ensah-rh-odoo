@@ -105,30 +105,30 @@
                     
                     <!-- Turnover Risk & Anomalies Row -->
                     <div class="row mb32">
-                        <!-- Turnover Risks -->
+                        <!-- Internships Ending Soon -->
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow h-100">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-danger">
-                                        <i class="fa fa-exclamation-triangle"/> Turnover Risk Alerts
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fa fa-clock-o"/> Internships Ending Soon
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <field name="turnover_risks_html" widget="html" readonly="1" nolabel="1"/>
+                                    <field name="upcoming_internships_html" widget="html" readonly="1" nolabel="1"/>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Anomalies -->
+                        <!-- Skill Distribution -->
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow h-100">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-warning">
-                                        <i class="fa fa-bell"/> Detected Anomalies
+                                    <h6 class="m-0 font-weight-bold text-success">
+                                        <i class="fa fa-bar-chart"/> Skill Level Distribution
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <field name="anomalies_html" widget="html" readonly="1" nolabel="1"/>
+                                    <field name="skill_distribution_html" widget="html" readonly="1" nolabel="1"/>
                                 </div>
                             </div>
                         </div>

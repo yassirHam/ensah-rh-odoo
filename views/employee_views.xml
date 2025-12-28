@@ -63,15 +63,7 @@
                             <field name="language_skills" widget="text_area" placeholder="Languages and proficiency levels"/>
                         </group>
                     </group>
-                    <group string="Communication (WhatsApp)">
-                        <group>
-                            <field name="whatsapp_number" placeholder="+212612345678"/>
-                            <field name="whatsapp_notifications_enabled"/>
-                        </group>
-                        <group>
-                            <field name="whatsapp_verified" readonly="1"/>
-                        </group>
-                    </group>
+
                     
                     <notebook>
                         <page string="Certifications">

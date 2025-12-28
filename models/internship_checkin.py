@@ -29,7 +29,7 @@ class InternshipCheckin(models.Model):
     
     # Source tracking
     source = fields.Selection([
-        ('whatsapp', 'WhatsApp'),
+
         ('manual', 'Manual Entry'),
         ('email', 'Email')
     ], string="Source", default='manual')
@@ -137,9 +137,7 @@ Please follow up with the student promptly.""",
             )
             
             # Try to send WhatsApp notification if enabled
-            if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_whatsapp_bot', 'True') == 'True':
-                # Will implement WhatsApp notification later
-                pass
+
             
             self.supervisor_notified = True
             

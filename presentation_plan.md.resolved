@@ -1,0 +1,115 @@
+# Part 9: 15-Minute Presentation Plan
+
+## Theme: "Modernizing Academic HR: The AI-Integrated Approach"
+
+### Presenter 1: The Architect (Systems & Logic)
+**Focus**: Backend, Architecture, AI Services, Core Models.
+**Time**: 7 Minutes
+
+#### Minute 1: Introduction & Problem Statement
+*   **Say**: "Good morning. Managing an engineering school like ENSAH is complex. We don't just manage employees; we manage an ecosystem of professors, student internships, and academic projects. Standard HR tools were insufficient."
+*   **Show**: Slide comparing "Traditional HR" (Payroll/Time off) vs "Academic HR" (Skills, Research, Internships).
+
+#### Minute 2: Solution Overview & Architecture
+*   **Say**: "We built `ensa_hoceima_hr` on Odoo 17. It's not just a data store; it's an intelligent platform. We chose a Service-Oriented Architecture to integrate AI without breaking Odoo's core."
+*   **Show**: A diagram showing: `Odoo Models` <--> `Service Layer` <--> `External AI APIs`.
+
+#### Minute 3: Core Models (The "Academic Employee")
+*   **Say**: "We inherited `hr.employee` and transformed it. We added a 'Skill Matrix' and 'Certifications'. But crucially, we linked Employees to Students via the 'Supervisor' relation. This one link allows us to track an employee's academic load."
+*   **Show**: The Employee Form View, highlighting the "Smart Buttons" for Projects and Internships.
+
+#### Minute 4: The Internship Module (Smart Matching)
+*   **Say**: "This is our star feature. We don't just list internships. We use a [MatchingEngine](file:///c:/odoo-addons/ensa_hoceima_hr/services/matching_engine.py#13-280). It calculates a 'Jaccard Index' for skills and 'Cosine Similarity' for interests to match students to companies."
+*   **Show**: The `ensa.internship` form showing the `Match Score: 92%` bar.
+
+#### Minute 5-6: AI Integration (Under the Hood)
+*   **Say**: "We implemented the `AiService` as an abstract model. This allows us to swap between OpenAI, HuggingFace, or local models immediately. We use it for sentiment analysis on student weekly check-ins."
+*   **Show**: Code snippet of [services/ai_service.py](file:///c:/odoo-addons/ensa_hoceima_hr/services/ai_service.py) -> [generate_text()](file:///c:/odoo-addons/ensa_hoceima_hr/services/ai_service.py#43-72).
+
+#### Minute 7: Handoff
+*   **Say**: "We've built a robust, intelligent backend. But data is useless if you can't visualize it. My colleague will now show you how we bring this data to life."
+
+---
+
+### Presenter 2: The User Experience (UI, Analytics & Output)
+**Focus**: Dashboard, Views, Reporting, Security.
+**Time**: 8 Minutes
+
+#### Minute 8: The Smart Dashboard (Owl Framework)
+*   **Say**: "Thank you. We used Odoo's OWL framework to build a custom React-like dashboard. It doesn't just show static charts; it uses the AI controller to pull narrative insights."
+*   **Show**: Live demo of the Dashboard. Point out the "AI Insights" text box that explains *why* a trend is happening.
+
+#### Minute 9: The AI Assistant (Chat Interface)
+*   **Say**: "Managers don't want to search filters. They want answers. We built a Chatbot that gathers context from the DB, sends it to the LLM, and returns an HTML-formatted answer."
+*   **Show**: Demo: Ask "Who is the top performing supervisor?" and show the AI response.
+
+#### Minute 10: Performance Evaluation (360 Degree)
+*   **Say**: "Our evaluation system is comprehensive. It tracks technical skills, soft skills, and innovation. The `performance_trend` field automatically visualizes progress with an arrow icon, calculated in real-time."
+*   **Show**: The Evaluation Form View with the colorful skill bars.
+
+#### Minute 11: Reporting Engine (QWeb)
+*   **Say**: "We customized QWeb to generate professional, anti-fraud documents. Our certificates use high-res background images and dynamic QR codes for verification."
+*   **Show**: Open a PDF Certificate of Internship. Zoom in on the signature and QR code.
+
+#### Minute 12: Security & ACL
+*   **Say**: "Data privacy is paramount. We defined strict ACLs. A 'User' can't trigger AI cost-incurring actions. Only 'Managers' can see the API keys. We use [ir.model.access.csv](file:///c:/odoo-addons/ensa_hoceima_hr/security/ir.model.access.csv) to enforce this at the database level."
+*   **Show**: The Settings menu where API keys are hidden/masked.
+
+#### Minute 13: Future Improvements
+*   **Say**: "We plan to add: 1. WhatsApp integration for student alerts (partially implemented). 2. A mobile app for student check-ins."
+
+#### Minute 14: Conclusion
+*   **Say**: "In conclusion, `ensa_hoceima_hr` demonstrates how Odoo can be transformed from an ERP into an Intelligent Academic Platform."
+*   **key Sentence**: "We moved from 'Managing Data' to 'Generating Insights'."
+
+---
+
+# Part 10: Final Exam Preparation
+
+## 1-Page Revision Summary
+
+*   **Architecture**: MVC (Models-Views-Controllers).
+*   **Key Inheritance**: `_inherit = 'hr.employee'`.
+*   **Services**: `AbstractModel` used for `ensa.ai.service` and `ensa.matching.engine`.
+*   **Dashboard**: Client Action -> `dashboard_views.xml` -> [dashboard_controller.js](file:///c:/odoo-addons/ensa_hoceima_hr/static/src/js/dashboard_controller.js).
+*   **Reports**: `ir.actions.report` triggers -> `QWeb Template`.
+*   **AI Logic**: `Context Gathering` (Python) -> `JSON` -> `API Call`.
+
+## Architecture Diagram Explanation (Mental Model)
+Visualize a 3-Layer Cake:
+1.  **Top Layer (UI)**: XML Views + OWL Dashboard (JS).
+2.  **Middle Layer (Business Logic)**: Python Models ([Employee](file:///c:/odoo-addons/ensa_hoceima_hr/models/employee.py#4-237), [Internship](file:///c:/odoo-addons/ensa_hoceima_hr/models/internship.py#4-281)).
+    *   *Side Car*: The `Services` folder acts as a helper library attached here.
+3.  **Bottom Layer (Data)**: PostgreSQL Database + `security/_access.csv` Gatekeeper.
+
+## 10 Likely Teacher Questions
+
+1.  **Q: Why did you put the AI logic in a [service](file:///c:/odoo-addons/ensa_hoceima_hr/services/ai_service.py#371-393) folder instead of the model?**
+    *   **A:** Separation of Concerns. It allows us to reuse the AI logic across different models (Internships, Evaluations) without code duplication.
+
+2.  **Q: How does the Dashboard fetch data?**
+    *   **A:** It uses the `useRPC` hook in the JS controller to call the `@http.route` or `@api.model` method in the backend.
+
+3.  **Q: What happens if the AI API is down?**
+    *   **A:** The service includes `try/except` blocks. It logs the error and returns a safe fallback message (or empty list) so the UI doesn't crash.
+
+4.  **Q: How is the 'Match Score' calculated?**
+    *   **A:** It's a weighted average: 40% Skills (Jaccard), 30% Interests (Cosine Similarity), 20% Performance, 10% Level.
+
+5.  **Q: Explain the `_inherit` in employee.py.**
+    *   **A:** We use Class Inheritance (`_inherit`) to add fields to the existing `hr.employee` table without modifying the core Odoo code.
+
+6.  **Q: How do you secure the API Keys?**
+    *   **A:** They are stored in `ir.config_parameter` (System Parameters) and should only be accessible by the System Administrator group.
+
+7.  **Q: Can a student see other students' grades?**
+    *   **A:** No. The Record Rules (which we would define in [security.xml](file:///c:/odoo-addons/ensa_hoceima_hr/security/security.xml)) would filter data so users only see their own records.
+
+8.  **Q: Why use QWeb for reports?**
+    *   **A:** QWeb allows us to mix HTML structure with Python logic (loops, conditions) directly in the template, making it perfect for dynamic data like certificates.
+
+9.  **Q: What is the `depends` list in the manifest for?**
+    *   **A:** It ensures Odoo installs the required modules (like [hr](file:///c:/odoo-addons/ensa_hoceima_hr/models/ai_assistant.py#107-166), `hr_recruitment`) *before* our module to prevent "Field does not exist" errors.
+
+10. **Q: How does the smart button work?**
+    *   **A:** It's a button in the XML view calling a Python method that returns an `ir.actions.act_window` dictionary, filtering the target model by the current record's ID.

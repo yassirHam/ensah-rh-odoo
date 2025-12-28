@@ -31,21 +31,7 @@ class HrEmployee(models.Model):
     internship_ids = fields.One2many('ensa.internship', 'supervisor_id', string="Supervised Internships")
     internship_count = fields.Integer(compute='_compute_internship_count', string="Internships Count")
 
-    # WhatsApp Integration
-    whatsapp_number = fields.Char(
-        string="WhatsApp Number",
-        help="Phone number for WhatsApp notifications (format: +1234567890)"
-    )
-    whatsapp_verified = fields.Boolean(
-        string="WhatsApp Verified",
-        default=False,
-        help="Whether the WhatsApp number has been verified"
-    )
-    whatsapp_notifications_enabled = fields.Boolean(
-        string="Enable WhatsApp Notifications",
-        default=True,
-        help="Receive HR notifications via WhatsApp"
-    )
+
 
     # Performance trend tracking
     avg_performance_score = fields.Float(string="Average Performance Score", compute="_compute_performance_metrics", store=True)
@@ -205,35 +191,7 @@ class HrEmployee(models.Model):
             'context': {'default_supervisor_id': self.id}
         }
     
-    def send_whatsapp_notification(self, message: str, media_url: str = None) -> bool:
-        """
-        Send WhatsApp notification to employee
-        
-        Args:
-            message: Message text to send
-            media_url: Optional URL to media file (PDF, image, etc.)
-            
-        Returns:
-            True if sent successfully, False otherwise
-        """
-        self.ensure_one()
-        
-        if not self.whatsapp_number or not self.whatsapp_notifications_enabled:
-            return False
-        
-        if not self.whatsapp_verified:
-            return False
-        
-        try:
-            return self.env['ensa.whatsapp.service'].send_message(
-                to_number=self.whatsapp_number,
-                message=message,
-                media_url=media_url
-            )
-        except Exception as e:
-            import logging
-            logging.getLogger(__name__).error(f"WhatsApp send failed for {self.name}: {str(e)}")
-            return False
+
 
 class EmployeeCertification(models.Model):
     _name = 'ensa.employee.certification'

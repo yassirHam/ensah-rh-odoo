@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <div class="app_settings_block" data-string="ENSA HR - AI &amp; WhatsApp" string="ENSA HR" data-key="ensa_hoceima_hr">
+                <div class="app_settings_block" data-string="ENSA HR - AI" string="ENSA HR" data-key="ensa_hoceima_hr">
                     
                     <!-- OpenAI Configuration -->
                     <h2>AI Configuration</h2>

@@ -58,20 +58,9 @@ class ResConfigSettings(models.TransientModel):
     )
     
     
-    # WhatsApp Bot (handled by Node.js bridge)
-    enable_whatsapp_bot = fields.Boolean(
-        string="Enable WhatsApp Bot",
-        config_parameter='ensa_hr.enable_whatsapp_bot',
-        default=True,
-        help="Enable WhatsApp chatbot (requires Node.js bridge)"
-    )
+
     
-    # Test Field (Stored in system parameters)
-    test_whatsapp_number = fields.Char(
-        string="Test Phone Number", 
-        config_parameter='ensa_hr.test_whatsapp_number',
-        help="Format: +212612345678"
-    )
+
     
     # Matching Engine Configuration
     enable_smart_matching = fields.Boolean(

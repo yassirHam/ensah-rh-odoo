@@ -9,7 +9,7 @@ class StudentInternship(models.Model):
     name = fields.Char(string="Internship Number", required=True, copy=False, readonly=True, default=lambda self: _('New'))
     student_name = fields.Char(string="Student Name", required=True)
     student_email = fields.Char(string="Student Email")
-    student_phone = fields.Char(string="WhatsApp Number", help="Format: +212612345678")
+    student_phone = fields.Char(string="Phone Number", help="Format: +212612345678")
     level = fields.Char(string="Academic Level", help="e.g., 3rd Year, 2nd Year")
     specialization = fields.Char(string="Specialization", help="Engineering specialization")
     host_company = fields.Char(string="Host Company", required=True)
@@ -200,33 +200,7 @@ class StudentInternship(models.Model):
             import logging
             logging.getLogger(__name__).error(f"Match calculation failed: {str(e)}")
     
-    def send_weekly_checkin_request(self):
-        """Send WhatsApp check-in request to student"""
-        self.ensure_one()
-        
-        if not self.student_email or self.status != 'in_progress':
-            return
-        
-        try:
-            # Check if WhatsApp bot is enabled
-            if self.env['ir.config_parameter'].sudo().get_param('ensa_hr.enable_whatsapp_bot', 'True') != 'True':
-                return
-            
-            whatsapp_service = self.env['ensa.whatsapp.service'].get_whatsapp_service()
-            
-            # Prepare notification data
-            data = {
-                'student_name': self.student_name,
-                'company_name': self.host_company
-            }
-            
-            # Send notification (need student phone number - will add to model later)
-            # For now, log the action
-            self.message_post(body=_("Weekly check-in request scheduled to be sent via WhatsApp"))
-            
-        except Exception as e:
-            import logging
-            logging.getLogger(__name__).error(f"WhatsApp check-in request failed: {str(e)}")
+
     
     def analyze_progress_with_ai(self):
         """Use AI to analyze progress and detect issues"""
