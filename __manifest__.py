@@ -1,6 +1,6 @@
 {
     'name': "Ensa Hoceima HR",
-    'summary': "Advanced HR Management System with Modern Dashboard",
+    'summary': "ENSAH HR Management System",
     'description': """
         Enterprise-grade HR solution featuring:
         - AI Chat Assistant for natural language HR queries
@@ -32,24 +32,23 @@
     'security/security.xml',
     'security/ir.model.access.csv',
     'data/data.xml',
-    'views/base_menu.xml',              # Must be first (defines root menu)
-    # 'data/email_templates.xml',  # TEMPORARILY DISABLED: XML schema validation issue
+    'views/base_menu.xml',              
     'views/evaluation_views.xml',
     'views/training_views.xml',
     'views/equipment_views.xml',
-    'views/employee_views.xml',         # Must come before menu (menu references action_ensa_employee_analysis)
-    'views/student_project_views.xml',  # NEW: Student projects UI
-    'views/internship_views.xml',       # NEW: Internships UI
-    'views/certification_views.xml',    # NEW: Certification UI (Must be before analytics)
-    'views/analytics_views.xml',        # NEW: Department analytics dashboards
-    'views/dashboard_views.xml',        # NEW: AI-powered dashboard
-    'views/ai_assistant_views.xml',     # NEW: AI chat assistant
-    'views/settings_views.xml',         # NEW: AI & WhatsApp configuration
-    'views/menu.xml',                   # Must come after all view files
-    'report/ensah_report_base.xml',     # Base templates
-    'report/report_templates.xml',      # Legacy/Detailed templates
-    'report/professional_reports.xml',  # New Professional templates
-    'report/report_actions.xml',        # All Report Actions
+    'views/employee_views.xml',         
+    'views/student_project_views.xml',  
+    'views/internship_views.xml',       
+    'views/certification_views.xml',    
+    'views/analytics_views.xml',        
+    'views/dashboard_views.xml',        
+    'views/ai_assistant_views.xml',     
+    'views/settings_views.xml',         
+    'views/menu.xml',                   
+    'report/ensah_report_base.xml',     
+    'report/report_templates.xml',      
+    'report/professional_reports.xml',  
+    'report/report_actions.xml',        
     ],
     'assets': {
         'web.assets_common': [
